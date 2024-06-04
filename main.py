@@ -1,12 +1,10 @@
 import time
 
 import uvicorn
-from fastapi import Depends, FastAPI, Request
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import FastAPI, Request
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
-from starlette.staticfiles import StaticFiles
+
+from app.db.access import database_connect
 
 app = FastAPI()
 
@@ -18,6 +16,11 @@ origins = [
 
 
 # app.add_middleware(HTTPSRedirectMiddleware)
+conn = database_connect()
+if conn:
+    print("the conection is cool")
+else:
+    print("not connected to the database")
 
 app.add_middleware(
     CORSMiddleware,

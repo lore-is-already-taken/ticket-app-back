@@ -9,7 +9,7 @@ def database_connect():
     database = "ticket-api-db"
     odbc = "ODBC Driver 18 for SQL Server"
 
-    conection_string = "Driver={};Server=tcp:{},1433;Database={};UID={};PWD={};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;".format(
+    conection_string = "Driver={};Server=tcp:{}.database.windows.net,1433;Database={};UID={};PWD={};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;".format(
         odbc, server, database, user, password
     )
     try:

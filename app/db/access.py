@@ -21,18 +21,22 @@ database_connect()
 #   FUNCIONES INSERT
 ####################################################
 
-def add_user(name:str,email:str,password:str):
+def add_user(name:str,email:str,password:str,rol:str)->bool:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Users (name,email,password) VALUES ('{name}','{email}','{password}');"
     cursor.execute(line)
     cursor.commit()
-    return True
+    
+    line = f"SELECT userID FROM Users WHERE email='{email}';"
+    cursor.execute(line)
+    rows = []
+    for row in cursor.fetchcall():
+        rows.append(f"{row.userID}")
 
-def add_rol(userID:int,rol:str):
-    cursor = database_connect().cursor()
-    line = f"INSERT INTO Rol (userID,rol) VALUES ('{userID}','{rol}');"
+    line = f"INSER INTO Rol (userID,rol) VALUES ('{rows[0]}','{rol}')"
     cursor.execute(line)
     cursor.commit()
+
     return True
 
 def add_ticket(autor:int,contenido:str,categoria:str,prioridad:int):
@@ -48,3 +52,14 @@ def add_Evento(ticketID:int,contenido:str):
     cursor.execute(line)
     cursor.commit()
     return True
+
+#####################################################
+#   FUNCIONES SELECT
+#####################################################
+
+def get_userID_by_email(email:str):
+    cursor = database_connect().cursor()
+    line = f"SELECT userID FROM Users WHERE email='{email}';"
+    cursor.execute(line)
+    for row in cursor.fetchcall():
+        return row.userID

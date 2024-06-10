@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from starlette.middleware.cors import CORSMiddleware
 
-from app.db.access import database_connect
+from app.db.access import add_user, database_connect
 
 app = FastAPI()
 

@@ -76,7 +76,7 @@ def get_user_by_ID(id:int)->List[str]:
     arreglo vacio
     '''
     cursor = database_connect().cursor()
-    line = f"SELECT name,email FROM Users WHERE userID='{id}'"
+    line = f"SELECT name,email FROM Users WHERE userID='{id}';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchcall():
@@ -90,8 +90,53 @@ def get_password_by_email(email:str)->str:
     Si no lo encuentra o hubo un error devuelve un string vacio.
     '''
     cursor = database_connect().cursor()
-    line = f"SELECT password FROM Users WHERE email='{email}'"
+    line = f"SELECT password FROM Users WHERE email='{email}';"
     cursor.execute(line)
     for row in cursor.fetchcall():
         return row.password
     return ""
+
+
+def get_tickets_by_autor(userID:int)->List[List[str]]:
+    cursor = database_connect().cursor()
+    line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
+    cursor.execute(line)
+    for row in cursor.fetchcall():
+        rolID = row.rolID
+
+    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
+    cursor.execute(line)
+    res = []
+    for row in cursor.fetchcall():
+        tick = []
+        tick.append(row.autor)
+        tick.append(row.responsable)
+        tick.append(row.contenido)
+        tick.append(row.categoria)
+        tick.append(row.review)
+        tick.append(row.prioridad)
+        tick.append(row.textoReview)
+        res.append(tick)
+    return res
+
+def get_tickets_by_responsable(userID:int)->List[List[str]]:
+    cursor = database_connect().cursor()
+    line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
+    cursor.execute(line)
+    for row in cursor.fetchcall():
+        rolID = row.rolID
+
+    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
+    cursor.execute(line)
+    res = []
+    for row in cursor.fetchcall():
+        tick = []
+        tick.append(row.autor)
+        tick.append(row.responsable)
+        tick.append(row.contenido)
+        tick.append(row.categoria)
+        tick.append(row.review)
+        tick.append(row.prioridad)
+        tick.append(row.textoReview)
+        res.append(tick)
+    return res

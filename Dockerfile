@@ -41,4 +41,7 @@ RUN gpg --verify mssql-tools18_18.3.1.1-1_amd64.sig mssql-tools18_18.3.1.1-1_amd
 RUN apk add --allow-untrusted msodbcsql18_18.3.3.1-1_amd64.apk
 RUN apk add --allow-untrusted mssql-tools18_18.3.1.1-1_amd64.apk
 
-CMD ["python3","main.py"]
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+

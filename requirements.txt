@@ -3,4 +3,3 @@ uvicorn
 gunicorn
 pyodbc
 pandas
-azure-identity

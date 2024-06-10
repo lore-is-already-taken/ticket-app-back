@@ -1,6 +1,5 @@
 from typing import List
-import pyodbc, struct
-from azure import identity
+import pyodbc
 
 def database_connect():
     user = "volaos"
@@ -33,21 +32,21 @@ def add_user(name:str,email:str,password:str,rol:str)->bool:
 
     return True
 
-def add_ticket(autor:int,contenido:str,categoria:str,prioridad:int):
+def add_ticket(autor:int,contenido:str,categoria:str,prioridad:int)->bool:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{autor}','{contenido}','{categoria}',{prioridad});"
     cursor.execute(line)
     cursor.commit()
     return True
 
-def add_rol(userID:int,rol:str):
+def add_rol(userID:int,rol:str)->bool:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Rol (userID,rol) VALUES ('{userID}','{rol}');"
     cursor.execute(line)
     cursor.commit()
     return True
 
-def add_Evento(ticketID:int,contenido:str):
+def add_Evento(ticketID:int,contenido:str)->bool:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Ticket (ticketID,contenido) VALUES ('{ticketID}','{contenido}');"
     cursor.execute(line)
@@ -72,8 +71,7 @@ def get_userID_by_email(email:str)->int:
 
 def get_user_by_ID(id:int)->List[str]:
     '''
-    Devuelve un arreglo con 2 elementos
-    [nombre,email].
+    Devuelve un arreglo con 2 elementos [nombre,email].
     Si no encuentra el usuario devuelve un
     arreglo vacio
     '''

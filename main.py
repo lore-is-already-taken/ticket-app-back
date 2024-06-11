@@ -1,11 +1,19 @@
 import time
-import jwt
 
+import jwt
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 
-from app.db.access import add_Evento, add_rol, add_ticket, add_user, database_connect, get_password_by_email, get_userID_by_email
+from app.db.access import (
+    add_Evento,
+    add_rol,
+    add_ticket,
+    add_user,
+    database_connect,
+    get_password_by_email,
+    get_userID_by_email,
+)
 from app.models.models import Evento, Ticket, User, log_User
 
 app = FastAPI()
@@ -46,14 +54,9 @@ async def add_process_time_header(request: Request, call_next):
     return response
 
 
-@app.get("/testdata")
-async def read_main():
-    return {"msg": "Hello World"}
-
-
 @app.get("/")
 async def root():
-    return {"msg": "hola mi rey"}
+    return {"msg": "Up and running!"}
 
 
 @app.post("/add_user")
@@ -67,8 +70,9 @@ async def create_user(user: User):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/login")
-async def create_user(user: log_User):
+async def login(user: log_User):
     try:
         result = get_password_by_email(user.email)
         if result == user.password:
@@ -80,6 +84,7 @@ async def create_user(user: log_User):
             return {"msg": "False"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/add_ticket")
 async def create_ticket(ticket: Ticket):
@@ -105,6 +110,7 @@ async def create_evento(evento: Evento):
             raise HTTPException(status_code=500, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000)

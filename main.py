@@ -1,10 +1,11 @@
 import time
+import jwt
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 
-from app.db.access import add_Evento, add_rol, add_ticket, add_user, database_connect
+from app.db.access import add_Evento, add_rol, add_ticket, add_user, database_connect, get_password_by_email, get_userID_by_email
 from app.models.models import Evento, Rol, Ticket, User
 
 app = FastAPI()
@@ -14,6 +15,10 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
 ]
+
+
+JWT_SECRET = "please_please_update_me_please"
+JWT_ALGORITHM = "HS256"
 
 
 # app.add_middleware(HTTPSRedirectMiddleware)
@@ -62,6 +67,19 @@ async def create_user(user: User):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/login")
+async def create_user(user: User):
+    try:
+        result = get_password_by_email(user.email)
+        if result == user.password:
+            user_id = get_userID_by_email(user.email)
+            payload = {"user_id": user_id, "expires": time.time() + 600}
+            token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+            return {"access_token": token}
+        else:
+            return {"msg": "False"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/add_ticket")
 async def create_ticket(ticket: Ticket):
@@ -87,19 +105,6 @@ async def create_evento(evento: Evento):
             raise HTTPException(status_code=500, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/add_rol")
-async def create_rol(rol: Rol):
-    try:
-        result = add_rol(rol.userID, rol.rol)
-        if result:
-            return {"msg": "Rol ingresado"}
-        else:
-            raise HTTPException(status_code=500, detail="No se puede :/")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000)

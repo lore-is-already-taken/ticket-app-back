@@ -7,6 +7,10 @@ class User(BaseModel):
     password: str
     rol: str
 
+class log_User(BaseModel):
+    email: str
+    password: str
+
 
 class Ticket(BaseModel):
     autor: int

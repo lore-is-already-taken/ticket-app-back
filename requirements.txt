@@ -3,4 +3,4 @@ uvicorn
 gunicorn
 pyodbc
 pandas
-jwt
+PyJWT

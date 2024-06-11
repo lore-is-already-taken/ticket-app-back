@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 
 from app.db.access import add_Evento, add_rol, add_ticket, add_user, database_connect, get_password_by_email, get_userID_by_email
-from app.models.models import Evento, Rol, Ticket, User
+from app.models.models import Evento, Ticket, User, log_User
 
 app = FastAPI()
 
@@ -68,7 +68,7 @@ async def create_user(user: User):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/login")
-async def create_user(user: User):
+async def create_user(user: log_User):
     try:
         result = get_password_by_email(user.email)
         if result == user.password:

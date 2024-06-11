@@ -65,7 +65,7 @@ def get_userID_by_email(email:str)->int:
     cursor = database_connect().cursor()
     line = f"SELECT userID FROM Users WHERE email='{email}';"
     cursor.execute(line)
-    for row in cursor.fetchcall():
+    for row in cursor.fetchall():
         return row.userID
     return 0
 
@@ -79,7 +79,7 @@ def get_user_by_ID(id:int)->List[str]:
     line = f"SELECT name,email FROM Users WHERE userID='{id}';"
     cursor.execute(line)
     res = []
-    for row in cursor.fetchcall():
+    for row in cursor.fetchall():
         res.append(row.name)
         res.append(row.email)
     return res
@@ -92,7 +92,7 @@ def get_password_by_email(email:str)->str:
     cursor = database_connect().cursor()
     line = f"SELECT password FROM Users WHERE email='{email}';"
     cursor.execute(line)
-    for row in cursor.fetchcall():
+    for row in cursor.fetchall():
         return row.password
     return ""
 
@@ -101,13 +101,13 @@ def get_tickets_by_autor(userID:int)->List[List[str]]:
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
-    for row in cursor.fetchcall():
+    for row in cursor.fetchall():
         rolID = row.rolID
 
     line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
     cursor.execute(line)
     res = []
-    for row in cursor.fetchcall():
+    for row in cursor.fetchall():
         tick = []
         tick.append(row.autor)
         tick.append(row.responsable)
@@ -123,13 +123,13 @@ def get_tickets_by_responsable(userID:int)->List[List[str]]:
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
-    for row in cursor.fetchcall():
+    for row in cursor.fetchall():
         rolID = row.rolID
 
     line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
     cursor.execute(line)
     res = []
-    for row in cursor.fetchcall():
+    for row in cursor.fetchall():
         tick = []
         tick.append(row.autor)
         tick.append(row.responsable)

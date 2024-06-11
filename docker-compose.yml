@@ -1,43 +1,6 @@
 services:
-
-  db:
-      image: mcr.microsoft.com/mssql/server:2019-latest
-      container_name: mssql
-      environment:
-        SA_PASSWORD: "YourPassword123"  # Puedes definir la contraseña aquí
-        ACCEPT_EULA: "Y"
-      ports:
-        - "1433:1433"
-      volumes:
-           - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-  #db:
-  #  build: ./db/.
-  #  container_name: mypostgres
-  #  #restart: always
-  #  environment:
-  #    POSTGRES_USER: myuser
-  #    POSTGRES_PASSWORD: mypassword
-  #    POSTGRES_DB: mydatabase
-  #  ports:
-  #    - "5432:5432"
-  #  volumes:
-  #    - "./db/sql-scripts/:/docker-entrypoint-initdb.d"
-  #    - ./db/data:/var/lib/postgresql/data
-  #adminer:
-  #  image: adminer
-  #  #restart: always
-  #  ports:
-  #    - 8080:8080
   api:
     build: .
     container_name: api
-    environment:
-      - DB_SERVER=db
-      - DB_PORT=1433
-      - DB_USER=sa
-      - DB_PASSWORD=YourPassword123
-      - DB_NAME=ticket-api-db
-    depends_on:
-      - db
     ports:
       - "8000:8000"

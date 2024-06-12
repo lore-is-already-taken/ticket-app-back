@@ -119,6 +119,22 @@ def get_tickets_by_autor(userID:int)->List[List[str]]:
         res.append(tick)
     return res
 
+
+def get_all_tickets():
+    cursor = database_connect().cursor()
+    line = f"SELECT * FROM Ticket;"
+    cursor.execute(line)
+    res = []
+    for row in cursor.fetchall():
+        tick = []
+        tick.append(row.autor)
+        tick.append(row.responsable)
+        tick.append(row.contenido)
+        tick.append(row.categoria)
+        res.append(tick)
+    return res
+
+
 def get_tickets_by_responsable(userID:int)->List[List[str]]:
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"

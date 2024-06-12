@@ -65,7 +65,10 @@ async def create_user(user: User):
     try:
         result = add_user(user.name, user.email, user.password, user.rol)
         if result:
-            return {"msg": "User Ingresado :)"}
+            usr = log_User()
+            usr.email = user.email
+            usr.password = user.password
+            return login(usr)
         else:
             raise HTTPException(status_code=500, detail="No se pudo ingresar")
     except Exception as e:

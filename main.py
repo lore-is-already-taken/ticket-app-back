@@ -61,14 +61,25 @@ async def root():
 
 
 @app.post("/add_user")
-async def create_user(user: User):
+async def create_user(user: User)->dict[str,str]:
+    '''
+    Crea usuario, en caso de que ya exista un usuario con el correo especificado retorna 0. En el caso
+    contrario retorna el token de sesion y se logea con el nuevo usuario.
+    '''
     try:
+        verif = get_userID_by_email(user.email)
+        if verif != 0:
+            # Si verif es distinto de 0 es porque encontro un usuario con ese correo
+            return {"access_token":"0"}
         result = add_user(user.name, user.email, user.password, user.rol)
-        if result:
-            usr = log_User()
+        if result != "":
+            usr = log_User
             usr.email = user.email
             usr.password = user.password
-            return login(usr)
+            user_id = get_userID_by_email(usr.email)
+            payload = {"user_id": user_id, "expires": time.time() + 600}
+            token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+            return {"access_token": token}
         else:
             raise HTTPException(status_code=500, detail="No se pudo ingresar")
     except Exception as e:
@@ -87,7 +98,7 @@ async def get_tickets():
 
 
 @app.post("/login")
-async def login(user: log_User):
+async def login(user: log_User)->dict[str,str]:
     try:
         result = get_password_by_email(user.email)
         if result == user.password:
@@ -96,7 +107,7 @@ async def login(user: log_User):
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}
         else:
-            return {"msg": "False"}
+            return {"access_token": "0"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

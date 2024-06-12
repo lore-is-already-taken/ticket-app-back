@@ -5,18 +5,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 
-# from app.db.access import (
-    # add_Evento,
-    # add_rol,
-    # add_ticket,
-    # add_user,
-    # database_connect,
-    # get_all_tickets,
-    # get_password_by_email,
-    # get_userID_by_email,
-# )
 import app.db.access as db
-# from app.models.models import Evento, Ticket, User, log_User
 import app.models.models as models
 
 app = FastAPI()

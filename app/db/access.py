@@ -21,7 +21,7 @@ database_connect()
 #   FUNCIONES INSERT
 ####################################################
 
-def add_user(name:str,email:str,password:str,rol:str)->bool:
+def add_user(name:str,email:str,password:str,rol:str)->int:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Users (name,email,password) VALUES ('{name}','{email}','{password}');"
     cursor.execute(line)
@@ -30,11 +30,11 @@ def add_user(name:str,email:str,password:str,rol:str)->bool:
     userID = get_userID_by_email(email)
     add_rol(userID,rol)
 
-    return True
+    return userID
 
 def add_ticket(autor:int,contenido:str,categoria:str,prioridad:int)->bool:
     cursor = database_connect().cursor()
-    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{autor}','{contenido}','{categoria}',{prioridad});"
+    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{autor}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
     cursor.commit()
     return True

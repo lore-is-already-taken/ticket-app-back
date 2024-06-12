@@ -27,3 +27,6 @@ class Evento(BaseModel):
 class Rol(BaseModel):
     userID: int
     rol: str
+
+class onlyID(BaseModel):
+    id: int

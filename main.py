@@ -5,17 +5,19 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 
-from app.db.access import (
-    add_Evento,
-    add_rol,
-    add_ticket,
-    add_user,
-    database_connect,
-    get_all_tickets,
-    get_password_by_email,
-    get_userID_by_email,
-)
-from app.models.models import Evento, Ticket, User, log_User
+# from app.db.access import (
+    # add_Evento,
+    # add_rol,
+    # add_ticket,
+    # add_user,
+    # database_connect,
+    # get_all_tickets,
+    # get_password_by_email,
+    # get_userID_by_email,
+# )
+import app.db.access as db
+# from app.models.models import Evento, Ticket, User, log_User
+import app.models.models as models
 
 app = FastAPI()
 
@@ -31,7 +33,7 @@ JWT_ALGORITHM = "HS256"
 
 
 # app.add_middleware(HTTPSRedirectMiddleware)
-conn = database_connect()
+conn = db.database_connect()
 if conn:
     print("the conection is cool")
 else:
@@ -61,23 +63,23 @@ async def root():
 
 
 @app.post("/add_user")
-async def create_user(user: User)->dict[str,str]:
+async def create_user(user: models.User)->dict[str,str]:
     '''
     Crea usuario, en caso de que ya exista un usuario con el correo especificado retorna 0. En el caso
     contrario retorna el token de sesion para logearse con el nuevo usuario.
     {access_token}:0/token
     '''
     try:
-        verif = get_userID_by_email(user.email)
+        verif = db.get_userID_by_email(user.email)
         if verif != 0:
             # Si verif es distinto de 0 es porque encontro un usuario con ese correo
             return {"access_token":"0"}
-        result = add_user(user.name, user.email, user.password, user.rol)
+        result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
-            usr = log_User
+            usr = models.log_User
             usr.email = user.email
             usr.password = user.password
-            user_id = get_userID_by_email(usr.email)
+            user_id = db.get_userID_by_email(usr.email)
             payload = {"user_id": user_id, "expires": time.time() + 600}
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}
@@ -89,7 +91,7 @@ async def create_user(user: User)->dict[str,str]:
 @app.post("/get_tickets")
 async def get_tickets():
     try:
-        result = get_all_tickets()
+        result = db.get_all_tickets()
         if result:
             return result
         else:
@@ -97,13 +99,26 @@ async def get_tickets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/get_tickets_by_autor")
+async def get_tickets_by_autor(id: models.onlyID):
+    try:
+        result = db.get_tickets_by_autor(id.id)
+        if len(result) == 0:
+            return result
+        else:
+            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 
 @app.post("/login")
-async def login(user: log_User)->dict[str,str]:
+async def login(user: models.log_User)->dict[str,str]:
     try:
-        result = get_password_by_email(user.email)
+        result = db.get_password_by_email(user.email)
         if result == user.password:
-            user_id = get_userID_by_email(user.email)
+            user_id = db.get_userID_by_email(user.email)
             payload = {"user_id": user_id, "expires": time.time() + 600}
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}
@@ -114,9 +129,9 @@ async def login(user: log_User)->dict[str,str]:
 
 
 @app.post("/add_ticket")
-async def create_ticket(ticket: Ticket):
+async def create_ticket(ticket: models.Ticket):
     try:
-        result = add_ticket(
+        result = db.add_ticket(
             ticket.autor, ticket.contenido, ticket.categoria, ticket.prioridad
         )
         if result:
@@ -128,9 +143,9 @@ async def create_ticket(ticket: Ticket):
 
 
 @app.post("/add_evento")
-async def create_evento(evento: Evento):
+async def create_evento(evento: models.Evento):
     try:
-        result = add_Evento(evento.ticketID, evento.contenido)
+        result = db.add_Evento(evento.ticketID, evento.contenido)
         if result:
             return {"msg": "Evento ingresado"}
         else:

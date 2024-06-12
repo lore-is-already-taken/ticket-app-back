@@ -21,7 +21,7 @@ database_connect()
 #   FUNCIONES INSERT
 ####################################################
 
-def add_user(name:str,email:str,password:str,rol:str)->bool:
+def add_user(name:str,email:str,password:str,rol:str)->int:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Users (name,email,password) VALUES ('{name}','{email}','{password}');"
     cursor.execute(line)
@@ -30,11 +30,11 @@ def add_user(name:str,email:str,password:str,rol:str)->bool:
     userID = get_userID_by_email(email)
     add_rol(userID,rol)
 
-    return True
+    return userID
 
 def add_ticket(autor:int,contenido:str,categoria:str,prioridad:int)->bool:
     cursor = database_connect().cursor()
-    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{autor}','{contenido}','{categoria}',{prioridad});"
+    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{autor}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
     cursor.commit()
     return True
@@ -97,43 +97,74 @@ def get_password_by_email(email:str)->str:
     return ""
 
 
-def get_tickets_by_autor(userID:int)->List[List[str]]:
+def get_tickets_by_autor(userID:int)->List:
+    '''
+    Obtiene todos los tickets de un determinado autor.
+    El formato de retorno es un arreglo de objetos, en el caso de no existir tickets devuelve un arreglo vacio.
+    '''
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
+    rolID = ""
     for row in cursor.fetchall():
         rolID = row.rolID
 
+    if rolID == "":
+        return []
     line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
-        tick = []
-        tick.append(row.autor)
-        tick.append(row.responsable)
-        tick.append(row.contenido)
-        tick.append(row.categoria)
-        tick.append(row.review)
-        tick.append(row.prioridad)
-        tick.append(row.textoReview)
+        tick = {
+            "autor": row.autor,
+            "resposable": row.resposable,
+            "contenido": row.contenido,
+            "categoria": row.categoria,
+            "prioridad": row.prioridad,
+            "review": row.review,
+            "textoReview": row.textoReview
+        }
         res.append(tick)
     return res
 
 
-def get_all_tickets():
+def get_all_tickets()->List:
+    '''
+    Obtiene todos los tickets.
+    El formato de retorno es un arreglo de objetos, en el caso de no existir tickets devuelve un arreglo vacio.
+    '''
     cursor = database_connect().cursor()
     line = f"SELECT * FROM Ticket;"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
-        tick = []
-        tick.append(row.autor)
-        tick.append(row.responsable)
-        tick.append(row.contenido)
-        tick.append(row.categoria)
+        tick = {
+            "autor": row.autor,
+            "resposable": row.resposable,
+            "contenido": row.contenido,
+            "categoria": row.categoria,
+            "prioridad": row.prioridad,
+            "review": row.review,
+            "textoReview": row.textoReview
+        }
         res.append(tick)
     return res
 
+def get_eventos_by_ticketID(ticketID:int)->List:
+    '''
+    Obtiene todos los eventos relacionados a un ticketID, si no hay ninguno, devuelve un arreglo vacio.
+    El retorno de los eventos es dentro de un arreglo de objetos json.
+    '''
+    cursor = database_connect().cursor()
+    line = f"SELECT contenido FROM Evento WHERE ticketID='{ticketID}';"
+    cursor.execute(line)
+    res = []
+    for row in cursor.fetchall():
+        evento = {
+            "contenido": row.contenido
+        }
+        res.append(evento)
+    return res
 
 def get_tickets_by_responsable(userID:int)->List[List[str]]:
     cursor = database_connect().cursor()

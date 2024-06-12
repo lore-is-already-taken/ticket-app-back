@@ -11,6 +11,7 @@ from app.db.access import (
     add_ticket,
     add_user,
     database_connect,
+    get_all_tickets,
     get_password_by_email,
     get_userID_by_email,
 )
@@ -65,6 +66,17 @@ async def create_user(user: User):
         result = add_user(user.name, user.email, user.password, user.rol)
         if result:
             return {"msg": "User Ingresado :)"}
+        else:
+            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/get_tickets")
+async def get_tickets():
+    try:
+        result = get_all_tickets()
+        if result:
+            return result
         else:
             raise HTTPException(status_code=500, detail="No se pudo ingresar")
     except Exception as e:

@@ -99,9 +99,6 @@ async def get_tickets_by_autor(id: models.onlyID):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
-
 @app.post("/login")
 async def login(user: models.log_User)->dict[str,str]:
     try:

@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-gunicorn
-pyodbc
-pandas
-PyJWT

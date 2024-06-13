@@ -92,8 +92,10 @@ def get_user_by_ID(id: int) -> List[str]:
     line = f"SELECT name,email FROM Users WHERE userID='{id}';"
     cursor.execute(line)
     res = []
+    print("query exitosa")
     for row in cursor.fetchall():
-        row = {"nombre": row.nombre, "email": row.email}
+        print("resultado")
+        row = {"nombre": row.name, "email": row.email}
         res.append(row)
     return res
 

@@ -1,5 +1,7 @@
 from typing import List
+
 import pyodbc
+
 
 def database_connect():
     user = "volaos"
@@ -15,53 +17,63 @@ def database_connect():
         return conn
     except Exception as e:
         print(e)
+
+
 database_connect()
 
 ####################################################
 #   FUNCIONES INSERT
 ####################################################
 
-def add_user(name:str,email:str,password:str,rol:str)->int:
+
+def add_user(name: str, email: str, password: str, rol: str) -> int:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Users (name,email,password) VALUES ('{name}','{email}','{password}');"
     cursor.execute(line)
     cursor.commit()
 
     userID = get_userID_by_email(email)
-    add_rol(userID,rol)
+    add_rol(userID, rol)
 
     return userID
 
-def add_ticket(autor:int,contenido:str,categoria:str,prioridad:int)->bool:
+
+def add_ticket(autor: int, contenido: str, categoria: str, prioridad: int) -> bool:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{autor}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
     cursor.commit()
     return True
 
-def add_rol(userID:int,rol:str)->bool:
+
+def add_rol(userID: int, rol: str) -> bool:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Rol (userID,rol) VALUES ('{userID}','{rol}');"
     cursor.execute(line)
     cursor.commit()
     return True
 
-def add_Evento(ticketID:int,contenido:str)->bool:
+
+def add_Evento(ticketID: int, contenido: str) -> bool:
     cursor = database_connect().cursor()
-    line = f"INSERT INTO Ticket (ticketID,contenido) VALUES ('{ticketID}','{contenido}');"
+    line = (
+        f"INSERT INTO Ticket (ticketID,contenido) VALUES ('{ticketID}','{contenido}');"
+    )
     cursor.execute(line)
     cursor.commit()
     return True
+
 
 #####################################################
 #   FUNCIONES SELECT
 #####################################################
 
-def get_userID_by_email(email:str)->int:
-    '''
+
+def get_userID_by_email(email: str) -> int:
+    """
     Obtiene el userID de un determinado usuario buscandolo
     por email, si no lo encuentra o algo sale mal devuelve 0
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT userID FROM Users WHERE email='{email}';"
     cursor.execute(line)
@@ -69,12 +81,13 @@ def get_userID_by_email(email:str)->int:
         return row.userID
     return 0
 
-def get_user_by_ID(id:int)->List[str]:
-    '''
+
+def get_user_by_ID(id: int) -> List[str]:
+    """
     Devuelve un arreglo con 2 elementos [nombre,email].
     Si no encuentra el usuario devuelve un
     arreglo vacio
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT name,email FROM Users WHERE userID='{id}';"
     cursor.execute(line)
@@ -84,11 +97,12 @@ def get_user_by_ID(id:int)->List[str]:
         res.append(row.email)
     return res
 
-def get_password_by_email(email:str)->str:
-    '''
+
+def get_password_by_email(email: str) -> str:
+    """
     Obtiene la contraseña de un usuario segun su email.
     Si no lo encuentra o hubo un error devuelve un string vacio.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT password FROM Users WHERE email='{email}';"
     cursor.execute(line)
@@ -97,11 +111,11 @@ def get_password_by_email(email:str)->str:
     return ""
 
 
-def get_tickets_by_autor(userID:int)->List:
-    '''
+def get_tickets_by_autor(userID: int) -> List:
+    """
     Obtiene todos los tickets de un determinado autor.
     El formato de retorno es un arreglo de objetos, en el caso de no existir tickets devuelve un arreglo vacio.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
@@ -122,17 +136,17 @@ def get_tickets_by_autor(userID:int)->List:
             "categoria": row.categoria,
             "prioridad": row.prioridad,
             "review": row.review,
-            "textoReview": row.textoReview
+            "textoReview": row.textoReview,
         }
         res.append(tick)
     return res
 
 
-def get_all_tickets()->List:
-    '''
+def get_all_tickets() -> List:
+    """
     Obtiene todos los tickets.
     El formato de retorno es un arreglo de objetos, en el caso de no existir tickets devuelve un arreglo vacio.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT * FROM Ticket;"
     cursor.execute(line)
@@ -145,28 +159,28 @@ def get_all_tickets()->List:
             "categoria": row.categoria,
             "prioridad": row.prioridad,
             "review": row.review,
-            "textoReview": row.textoReview
+            "textoReview": row.textoReview,
         }
         res.append(tick)
     return res
 
-def get_eventos_by_ticketID(ticketID:int)->List:
-    '''
+
+def get_eventos_by_ticketID(ticketID: int) -> List:
+    """
     Obtiene todos los eventos relacionados a un ticketID, si no hay ninguno, devuelve un arreglo vacio.
     El retorno de los eventos es dentro de un arreglo de objetos json.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT contenido FROM Evento WHERE ticketID='{ticketID}';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
-        evento = {
-            "contenido": row.contenido
-        }
+        evento = {"contenido": row.contenido}
         res.append(evento)
     return res
 
-def get_tickets_by_responsable(userID:int)->List[List[str]]:
+
+def get_tickets_by_responsable(userID: int) -> List[List[str]]:
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
@@ -188,18 +202,21 @@ def get_tickets_by_responsable(userID:int)->List[List[str]]:
         res.append(tick)
     return res
 
+
 ###############################################################################
 #   FUNCIONES UPDATE
 ###############################################################################
 
-def update_name(usr:int,name:str)->bool:
+
+def update_name(usr: int, name: str) -> bool:
     cursor = database_connect().cursor()
     line = f"UPDATE Users SET name='{name}' WHERE userID='{usr}';"
     cursor.execute(line)
     cursor.commit()
     return True
 
-def update_pass(usr:int,oldPassword:str,newPassword:str)->bool:
+
+def update_pass(usr: int, oldPassword: str, newPassword: str) -> bool:
     cursor = database_connect().cursor()
     line = f"SELECT password FROM Users WHERE userID='{usr}';"
     cursor.execute(line)

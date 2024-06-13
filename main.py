@@ -89,7 +89,6 @@ async def get_user(usr: models.onlyID):
     try:
         result = db.get_user_by_ID(usr.id)
         if result:
-            print("result")
             return result
         else:
             raise HTTPException(status_code=500, detail="No se pudo ingresar")

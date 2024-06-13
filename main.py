@@ -100,8 +100,10 @@ async def get_user(usr: models.onlyID):
 async def update_name(user: models.changeName):
     try:
 
-        usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]).split('.')[1]
-        res = db.update_name(usrID,user.name)
+        usrID = jwt.decode(
+            user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]
+        ).split(".")[1]
+        res = db.update_name(usrID, user.name)
 
         if res:
             return {"msg": "Success"}
@@ -113,8 +115,10 @@ async def update_name(user: models.changeName):
 async def update_pass(user: models.changePass):
     try:
 
-        usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]).split('.')[1]
-        res = db.update_pass(usrID,user.oldPass,user.newPass)
+        usrID = jwt.decode(
+            user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]
+        ).split(".")[1]
+        res = db.update_pass(usrID, user.oldPass, user.newPass)
 
         if res:
             return {"msg": "Success"}

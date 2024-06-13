@@ -77,7 +77,7 @@ async def create_user(user: models.User)->dict[str,str]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/get_tickets")
+@app.get("/get_tickets")
 async def get_tickets():
     try:
         result = db.get_all_tickets()
@@ -85,6 +85,24 @@ async def get_tickets():
             return result
         else:
             raise HTTPException(status_code=500, detail="No se pudo ingresar")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/update_name",status_code=200)
+async def update_name(user: models.changeName):
+    try:
+        res = db.update_name(user.user,user.name)
+        if res:
+            return {"msg": "Success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/update_pass",status_code=200)
+async def update_pass(user: models.changePass):
+    try:
+        res = db.update_pass(user.user,user.password)
+        if res:
+            return {"msg": "Success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

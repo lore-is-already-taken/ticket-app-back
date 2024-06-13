@@ -187,3 +187,21 @@ def get_tickets_by_responsable(userID:int)->List[List[str]]:
         tick.append(row.textoReview)
         res.append(tick)
     return res
+
+###############################################################################
+#   FUNCIONES UPDATE
+###############################################################################
+
+def update_name(usr:int,name:str)->bool:
+    cursor = database_connect().cursor()
+    line = f"UPDATE Users SET name='{name}' WHERE userID='{usr}';"
+    cursor.execute(line)
+    cursor.commit()
+    return True
+
+def update_pass(usr:int,password:str)->bool:
+    cursor = database_connect().cursor()
+    line = f"UPDATE Users SET password='{password}' WHERE userID='{usr}';"
+    cursor.execute(line)
+    cursor.commit()
+    return True

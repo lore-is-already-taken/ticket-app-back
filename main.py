@@ -91,7 +91,7 @@ async def get_user(usr: models.onlyID):
         if result:
             return result
         else:
-            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+            return {"msg": "ID especificado no existe"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

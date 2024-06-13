@@ -88,6 +88,17 @@ async def get_tickets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/get_user")
+async def get_user(usr: models.onlyID):
+    try:
+        result = db.get_user_by_ID(usr.id)
+        if result:
+            return result
+        else:
+            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/update_name",status_code=200)
 async def update_name(user: models.changeName):
     try:

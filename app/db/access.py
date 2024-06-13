@@ -80,8 +80,11 @@ def get_user_by_ID(id:int)->List[str]:
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
-        res.append(row.name)
-        res.append(row.email)
+        row = {
+            "nombre": row.nombre,
+            "email": row.email
+        }
+        res.append(row)
     return res
 
 def get_password_by_email(email:str)->str:

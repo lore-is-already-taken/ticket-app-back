@@ -99,8 +99,10 @@ async def get_user(usr: models.onlyID):
 @app.post("/update_name", status_code=200)
 async def update_name(user: models.changeName):
     try:
-        usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])['user_id']
-        res = db.update_name(usrID,user.name)
+        usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
+        res = db.update_name(usrID, user.name)
         if res:
             return {"msg": "Success"}
     except Exception as e:
@@ -110,16 +112,11 @@ async def update_name(user: models.changeName):
 @app.post("/update_pass", status_code=200)
 async def update_pass(user: models.changePass):
     try:
-<<<<<<< HEAD
 
-        usrID = jwt.decode(
-            user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]
-        ).split(".")[1]
+        usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         res = db.update_pass(usrID, user.oldPass, user.newPass)
-=======
-        usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])['user_id']
-        res = db.update_pass(usrID,user.oldPass,user.newPass)
->>>>>>> dev
 
         if res:
             return {"msg": "Success"}

@@ -7,6 +7,7 @@ class User(BaseModel):
     password: str
     rol: str
 
+
 class log_User(BaseModel):
     email: str
     password: str
@@ -28,12 +29,15 @@ class Rol(BaseModel):
     userID: int
     rol: str
 
+
 class onlyID(BaseModel):
     id: int
+
 
 class changeName(BaseModel):
     access_token: str
     name: str
+
 
 class changePass(BaseModel):
     access_token: str

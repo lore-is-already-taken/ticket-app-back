@@ -32,10 +32,10 @@ class onlyID(BaseModel):
     id: int
 
 class changeName(BaseModel):
-    token: str
+    access_token: str
     name: str
 
 class changePass(BaseModel):
-    token: str
+    access_token: str
     oldPass: str
     newPass: str

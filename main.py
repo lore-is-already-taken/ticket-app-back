@@ -91,7 +91,8 @@ async def get_tickets():
 @app.post("/update_name",status_code=200)
 async def update_name(user: models.changeName):
     try:
-        res = db.update_name(user.user,user.name)
+        usrID = jwt.decode(user.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        res = db.update_name(usrID,user.name)
         if res:
             return {"msg": "Success"}
     except Exception as e:
@@ -100,9 +101,12 @@ async def update_name(user: models.changeName):
 @app.post("/update_pass",status_code=200)
 async def update_pass(user: models.changePass):
     try:
-        res = db.update_pass(user.user,user.password)
+        usrID = jwt.decode(user.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        res = db.update_pass(usrID,user.oldPass,user.newPass)
         if res:
             return {"msg": "Success"}
+        else:
+            return {"msg": "Wrong password"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

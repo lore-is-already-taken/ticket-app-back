@@ -30,3 +30,12 @@ class Rol(BaseModel):
 
 class onlyID(BaseModel):
     id: int
+
+class changeName(BaseModel):
+    token: str
+    name: str
+
+class changePass(BaseModel):
+    token: str
+    oldPass: str
+    newPass: str

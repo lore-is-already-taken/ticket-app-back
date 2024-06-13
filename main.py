@@ -5,18 +5,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 
-# from app.db.access import (
-    # add_Evento,
-    # add_rol,
-    # add_ticket,
-    # add_user,
-    # database_connect,
-    # get_all_tickets,
-    # get_password_by_email,
-    # get_userID_by_email,
-# )
 import app.db.access as db
-# from app.models.models import Evento, Ticket, User, log_User
 import app.models.models as models
 
 app = FastAPI()
@@ -88,7 +77,7 @@ async def create_user(user: models.User)->dict[str,str]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/get_tickets")
+@app.get("/get_tickets")
 async def get_tickets():
     try:
         result = db.get_all_tickets()
@@ -96,6 +85,28 @@ async def get_tickets():
             return result
         else:
             raise HTTPException(status_code=500, detail="No se pudo ingresar")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/update_name",status_code=200)
+async def update_name(user: models.changeName):
+    try:
+        usrID = jwt.decode(user.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        res = db.update_name(usrID,user.name)
+        if res:
+            return {"msg": "Success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/update_pass",status_code=200)
+async def update_pass(user: models.changePass):
+    try:
+        usrID = jwt.decode(user.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        res = db.update_pass(usrID,user.oldPass,user.newPass)
+        if res:
+            return {"msg": "Success"}
+        else:
+            return {"msg": "Wrong password"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -109,9 +120,6 @@ async def get_tickets_by_autor(id: models.onlyID):
             raise HTTPException(status_code=500, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
 
 @app.post("/login")
 async def login(user: models.log_User)->dict[str,str]:

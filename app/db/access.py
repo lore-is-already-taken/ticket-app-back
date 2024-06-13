@@ -140,7 +140,7 @@ def get_all_tickets()->List:
     for row in cursor.fetchall():
         tick = {
             "autor": row.autor,
-            "resposable": row.resposable,
+            "responsable": row.responsable,
             "contenido": row.contenido,
             "categoria": row.categoria,
             "prioridad": row.prioridad,
@@ -187,3 +187,29 @@ def get_tickets_by_responsable(userID:int)->List[List[str]]:
         tick.append(row.textoReview)
         res.append(tick)
     return res
+
+###############################################################################
+#   FUNCIONES UPDATE
+###############################################################################
+
+def update_name(usr:int,name:str)->bool:
+    cursor = database_connect().cursor()
+    line = f"UPDATE Users SET name='{name}' WHERE userID='{usr}';"
+    cursor.execute(line)
+    cursor.commit()
+    return True
+
+def update_pass(usr:int,oldPassword:str,newPassword:str)->bool:
+    cursor = database_connect().cursor()
+    line = f"SELECT password FROM Users WHERE userID='{usr}';"
+    cursor.execute(line)
+    res = ""
+    for row in cursor.fetchall():
+        res = row.password
+    if res != oldPassword:
+        return False
+
+    line = f"UPDATE Users SET password='{newPassword}' WHERE userID='{usr}';"
+    cursor.execute(line)
+    cursor.commit()
+    return True

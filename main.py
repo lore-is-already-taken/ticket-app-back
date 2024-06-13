@@ -11,12 +11,6 @@ import app.models.models as models
 app = FastAPI()
 
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-]
-
-
 JWT_SECRET = "please_please_update_me_please"
 JWT_ALGORITHM = "HS256"
 
@@ -52,17 +46,17 @@ async def root():
 
 
 @app.post("/add_user")
-async def create_user(user: models.User)->dict[str,str]:
-    '''
+async def create_user(user: models.User) -> dict[str, str]:
+    """
     Crea usuario, en caso de que ya exista un usuario con el correo especificado retorna 0. En el caso
     contrario retorna el token de sesion para logearse con el nuevo usuario.
     {access_token}:0/token
-    '''
+    """
     try:
         verif = db.get_userID_by_email(user.email)
         if verif != 0:
             # Si verif es distinto de 0 es porque encontro un usuario con ese correo
-            return {"access_token":"0"}
+            return {"access_token": "0"}
         result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
             usr = models.log_User
@@ -77,6 +71,7 @@ async def create_user(user: models.User)->dict[str,str]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/get_tickets")
 async def get_tickets():
     try:
@@ -87,6 +82,7 @@ async def get_tickets():
             raise HTTPException(status_code=500, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/get_user")
 async def get_user(usr: models.onlyID):
@@ -99,27 +95,34 @@ async def get_user(usr: models.onlyID):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/update_name",status_code=200)
+
+@app.post("/update_name", status_code=200)
 async def update_name(user: models.changeName):
     try:
+
         usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]).split('.')[1]
         res = db.update_name(usrID,user.name)
+
         if res:
             return {"msg": "Success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/update_pass",status_code=200)
+
+@app.post("/update_pass", status_code=200)
 async def update_pass(user: models.changePass):
     try:
+
         usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]).split('.')[1]
         res = db.update_pass(usrID,user.oldPass,user.newPass)
+
         if res:
             return {"msg": "Success"}
         else:
             return {"msg": "Wrong password"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/get_tickets_by_autor")
 async def get_tickets_by_autor(id: models.onlyID):
@@ -132,8 +135,9 @@ async def get_tickets_by_autor(id: models.onlyID):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/login")
-async def login(user: models.log_User)->dict[str,str]:
+async def login(user: models.log_User) -> dict[str, str]:
     try:
         result = db.get_password_by_email(user.email)
         if result == user.password:

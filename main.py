@@ -69,6 +69,15 @@ async def create_user(user: models.User) -> dict[str, str]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("get_events")
+async def get_events(token: models.onlyToken):
+    try:
+        userID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])['user_id']
+        return db.get_events_by_userID(userID)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/get_tickets")
 async def get_tickets():
     try:
@@ -82,9 +91,12 @@ async def get_tickets():
 
 
 @app.post("/get_user")
-async def get_user(usr: models.onlyID):
+async def get_user(token:models.onlyToken):
     try:
-        result = db.get_user_by_ID(usr.id)
+        usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
+        result = db.get_user_by_ID(usrID)
         if result:
             return result
         else:
@@ -109,7 +121,6 @@ async def update_name(user: models.changeName):
 @app.post("/update_pass", status_code=200)
 async def update_pass(user: models.changePass):
     try:
-
         usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
@@ -124,9 +135,12 @@ async def update_pass(user: models.changePass):
 
 
 @app.post("/get_tickets_by_autor")
-async def get_tickets_by_autor(id: models.onlyID):
+async def get_tickets_by_autor(token: models.onlyToken):
     try:
-        result = db.get_tickets_by_autor(id.id)
+        usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
+        result = db.get_tickets_by_autor(usrID)
         if len(result) == 0:
             return result
         else:

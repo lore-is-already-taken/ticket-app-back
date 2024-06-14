@@ -81,6 +81,17 @@ async def drop_user(user: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/asign_ticket")
+async def asign_ticket(info: models.ticket_user):
+    try:
+        userID = jwt.decode(info.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])['user_id']
+        if db.asign_responsable(userID,info.ticket_id):
+            return {"msg": "Success"}
+        else:
+            return {"msg": "Failed"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("get_events")
 async def get_events(token: models.onlyToken):
     try:

@@ -34,6 +34,11 @@ class onlyToken(BaseModel):
     access_token: str
 
 
+class ticket_user(BaseModel):
+    access_token: str
+    ticket_id: int
+
+
 class changeName(BaseModel):
     access_token: str
     name: str

@@ -201,6 +201,66 @@ def get_tickets_by_responsable(userID: int) -> List:
     return res
 
 
+def general_get_tickets(userID: int) -> List:
+    '''
+    Obtiene todos los tickets no asignados y los asignados a un usuario en particular.
+    '''
+    cursor = database_connect().cursor()
+    line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
+    cursor.execute(line)
+    rolID = ""
+    for row in cursor.fetchall():
+        rolID = row.rolID
+    if rolID == "":
+        return []
+
+    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}' OR responsable='';"
+    cursor.execute(line)
+    res = []
+    for row in cursor.fetchall():
+        tick = {
+            "autor": row.autor,
+            "responsable": row.responsable,
+            "contenido": row.contenido,
+            "categoria": row.categoria,
+            "review": row.review,
+            "prioridad": row.prioridad,
+            "textoReview": row.textoReview
+        }
+        res.append(tick)
+    return res
+
+
+def filtered_get_tickets(userID: int, categoria: str) -> List:
+    '''
+    Obtiene todos los tickets de una determinada categoria, que no esten asignados o asignados a un usuario en particular.
+    '''
+    cursor = database_connect().cursor()
+    line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
+    cursor.execute(line)
+    rolID = ""
+    for row in cursor.fetchall():
+        rolID = row.rolID
+    if rolID == "":
+        return []
+
+    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE (responsable='{rolID}' OR responsable='') AND categoria={categoria};"
+    cursor.execute(line)
+    res = []
+    for row in cursor.fetchall():
+        tick = {
+            "autor": row.autor,
+            "responsable": row.responsable,
+            "contenido": row.contenido,
+            "categoria": row.categoria,
+            "review": row.review,
+            "prioridad": row.prioridad,
+            "textoReview": row.textoReview
+        }
+        res.append(tick)
+    return res
+
+
 def get_events_by_userID(userID: int) -> List:
     '''
     A partir de un userID, encuentra el rolID correspondiente, con eso encuentra todos los tickets

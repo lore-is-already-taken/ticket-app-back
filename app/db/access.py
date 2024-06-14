@@ -180,7 +180,7 @@ def get_eventos_by_ticketID(ticketID: int) -> List:
     return res
 
 
-def get_tickets_by_responsable(userID: int) -> List[List[str]]:
+def get_tickets_by_responsable(userID: int) -> List:
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
@@ -191,16 +191,49 @@ def get_tickets_by_responsable(userID: int) -> List[List[str]]:
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
-        tick = []
-        tick.append(row.autor)
-        tick.append(row.responsable)
-        tick.append(row.contenido)
-        tick.append(row.categoria)
-        tick.append(row.review)
-        tick.append(row.prioridad)
-        tick.append(row.textoReview)
+        tick = {
+            "autor": row.autor,
+            "responsable": row.responsable,
+            "contenido": row.contenido,
+            "categoria": row.categoria,
+            "review": row.review,
+            "prioridad": row.prioridad,
+            "textoReview": row.textoReview
+        }
         res.append(tick)
     return res
+
+
+def get_events_by_userID(userID: int) -> List:
+    '''
+    A partir de un userID, encuentra el rolID correspondiente, con eso encuentra todos los tickets
+    asociados a dicho usuario, desde los cuales extrae los eventos.
+    '''
+    cursor = database_connect().cursor()
+    line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
+    cursor.execute(line)
+    if len(cursor.fetchall) == 0:
+        return []
+    for row in cursor.fetchall():
+        rolID = row.rolID
+
+    line = f"SELECT ticketID FROM Ticket WHERE autor='{rolID}';"
+    cursor.execute(line)
+    if len(cursor.fetchall) == 0:
+        return []
+    tickets = []
+    for row in cursor.fetchall():
+            tickets.append(row.ticketID)
+
+    line = f"SELECT contenido FROM Evento WHERE ticketID IN ({tickets});"
+    cursor.execute(line)
+    eventos = []
+    for row in cursor.fetchall():
+        evento = {
+            "contenido": row.contenido 
+        }
+        eventos.append(evento)
+    return eventos
 
 
 ###############################################################################

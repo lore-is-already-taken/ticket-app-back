@@ -59,10 +59,7 @@ async def create_user(user: models.User) -> dict[str, str]:
             return {"access_token": "0"}
         result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
-            usr = models.log_User
-            usr.email = user.email
-            usr.password = user.password
-            user_id = db.get_userID_by_email(usr.email)
+            user_id = db.get_userID_by_email(user.email)
             payload = {"user_id": user_id, "expires": time.time() + 600}
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}

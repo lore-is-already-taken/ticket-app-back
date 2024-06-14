@@ -1,5 +1,4 @@
 from typing import List
-
 import pyodbc
 
 
@@ -18,8 +17,6 @@ def database_connect():
     except Exception as e:
         print(e)
 
-
-database_connect()
 
 ####################################################
 #   FUNCIONES INSERT
@@ -260,6 +257,34 @@ def update_pass(usr: int, oldPassword: str, newPassword: str) -> bool:
         return False
 
     line = f"UPDATE Users SET password='{newPassword}' WHERE userID='{usr}';"
+    cursor.execute(line)
+    cursor.commit()
+    return True
+
+
+def asign_responsable(ticket: int, user: int) -> bool:
+    '''
+    Usando el userID encuentra el rolID correspondiente y lo usa para asignar el valor responsable a 
+    un ticket usando el ticketID.
+    Devuelve True si la asignacion fue exitosa, y False si no se encontro ningun rol asociado a ese user.
+    '''
+    cursor = database_connect().cursor()
+    line = f"SELECT rolID FROM Rol WHERE userID='{user}';"
+    cursor.execute(line)
+    rolID = ""
+    for row in cursor.fetchall():
+        rolID = row.userID
+    if rolID == "":
+        return False
+    line = f"UPDATE Rol SET responsable='{rolID}' WHERE ticketID='{ticket}';"
+    cursor.execute(line)
+    cursor.commit()
+    return True
+
+
+def delete_user(usr: int) -> bool:
+    cursor = database_connect().cursor()
+    line = f"DELETE FROM Users WHERE userID='{usr}';"
     cursor.execute(line)
     cursor.commit()
     return True

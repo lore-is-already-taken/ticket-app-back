@@ -176,13 +176,12 @@ async def get_tickets_by_autor(token: models.onlyToken):
 async def login(user: models.log_User) -> dict[str, str]:
     try:
         result = db.get_password_by_email(user.email)
-        if result == user.password:
-            user_id = db.get_userID_by_email(user.email)
-            payload = {"user_id": user_id, "expires": time.time() + 600}
-            token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-            return {"access_token": token}
-        else:
+        if result != user.password:
             return {"access_token": "0"}
+        user_id = db.get_userID_by_email(user.email)
+        payload = {"user_id": user_id, "expires": time.time() + 600}
+        token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        return {"access_token": token}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

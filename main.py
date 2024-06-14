@@ -47,11 +47,11 @@ async def root():
 
 @app.post("/add_user")
 async def create_user(user: models.User) -> dict[str, str]:
-    """
+    '''
     Crea usuario, en caso de que ya exista un usuario con el correo especificado retorna 0. En el caso
     contrario retorna el token de sesion para logearse con el nuevo usuario.
     {access_token}:0/token
-    """
+    '''
     try:
         verif = db.get_userID_by_email(user.email)
         if verif != 0:

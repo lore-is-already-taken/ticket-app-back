@@ -50,7 +50,7 @@ async def create_user(user: models.User) -> dict[str, str]:
     '''
     Crea usuario, en caso de que ya exista un usuario con el correo especificado retorna 0. En el caso
     contrario retorna el token de sesion para logearse con el nuevo usuario.
-    {access_token}:0/token
+    {access_token}:0
     '''
     try:
         verif = db.get_userID_by_email(user.email)
@@ -69,7 +69,7 @@ async def create_user(user: models.User) -> dict[str, str]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/drop_user")
+@app.post("/drop_user",status_code=200)
 async def drop_user(user: models.onlyToken):
     try:
         userID = jwt.decode(user, JWT_SECRET, algorithms=[JWT_ALGORITHM])['user_id']
@@ -105,10 +105,8 @@ async def get_events(token: models.onlyToken):
 async def get_tickets():
     try:
         result = db.get_all_tickets()
-        if result:
+        if result != []:
             return result
-        else:
-            raise HTTPException(status_code=500, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -120,7 +118,7 @@ async def get_user(token:models.onlyToken):
             "user_id"
         ]
         result = db.get_user_by_ID(usrID)
-        if result:
+        if result != []:
             return result
         else:
             return {"msg": "ID especificado no existe"}

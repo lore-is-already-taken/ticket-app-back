@@ -1,4 +1,5 @@
 from typing import List
+
 import pyodbc
 
 
@@ -195,16 +196,16 @@ def get_tickets_by_responsable(userID: int) -> List:
             "categoria": row.categoria,
             "review": row.review,
             "prioridad": row.prioridad,
-            "textoReview": row.textoReview
+            "textoReview": row.textoReview,
         }
         res.append(tick)
     return res
 
 
 def general_get_tickets(userID: int) -> List:
-    '''
+    """
     Obtiene todos los tickets no asignados y los asignados a un usuario en particular.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
@@ -225,16 +226,16 @@ def general_get_tickets(userID: int) -> List:
             "categoria": row.categoria,
             "review": row.review,
             "prioridad": row.prioridad,
-            "textoReview": row.textoReview
+            "textoReview": row.textoReview,
         }
         res.append(tick)
     return res
 
 
 def filtered_get_tickets(userID: int, categoria: str) -> List:
-    '''
+    """
     Obtiene todos los tickets de una determinada categoria, que no esten asignados o asignados a un usuario en particular.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
@@ -255,17 +256,17 @@ def filtered_get_tickets(userID: int, categoria: str) -> List:
             "categoria": row.categoria,
             "review": row.review,
             "prioridad": row.prioridad,
-            "textoReview": row.textoReview
+            "textoReview": row.textoReview,
         }
         res.append(tick)
     return res
 
 
 def get_events_by_userID(userID: int) -> List:
-    '''
+    """
     A partir de un userID, encuentra el rolID correspondiente, con eso encuentra todos los tickets
     asociados a dicho usuario, desde los cuales extrae los eventos.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
@@ -280,15 +281,13 @@ def get_events_by_userID(userID: int) -> List:
         return []
     tickets = []
     for row in cursor.fetchall():
-            tickets.append(row.ticketID)
+        tickets.append(row.ticketID)
 
     line = f"SELECT contenido FROM Evento WHERE ticketID IN ({tickets});"
     cursor.execute(line)
     eventos = []
     for row in cursor.fetchall():
-        evento = {
-            "contenido": row.contenido 
-        }
+        evento = {"contenido": row.contenido}
         eventos.append(evento)
     return eventos
 
@@ -323,11 +322,11 @@ def update_pass(usr: int, oldPassword: str, newPassword: str) -> bool:
 
 
 def asign_responsable(ticket: int, user: int) -> bool:
-    '''
-    Usando el userID encuentra el rolID correspondiente y lo usa para asignar el valor responsable a 
+    """
+    Usando el userID encuentra el rolID correspondiente y lo usa para asignar el valor responsable a
     un ticket usando el ticketID.
     Devuelve True si la asignacion fue exitosa, y False si no se encontro ningun rol asociado a ese user.
-    '''
+    """
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{user}';"
     cursor.execute(line)

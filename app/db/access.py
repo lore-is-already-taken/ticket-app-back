@@ -91,7 +91,7 @@ def get_user_by_ID(id: int) -> List[str]:
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
-        row = {"nombre": row.name, "email": row.email}
+        row = {"name": row.name, "email": row.email}
         res.append(row)
     return res
 

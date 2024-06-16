@@ -123,10 +123,12 @@ async def get_tickets():
 @app.post("/get_user")
 async def get_user(token: models.onlyToken):
     try:
-        usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         result = db.get_user_by_ID(usrID)
         if result != []:
-            return result
+            return result[0]
         else:
             return {"msg": "ID especificado no existe"}
     except Exception as e:

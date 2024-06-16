@@ -45,7 +45,7 @@ async def root():
     return {"msg": "Up and running!"}
 
 
-@app.post("/add_user")
+@app.post("/add_user", tags=["User"])
 async def create_user(user: models.User) -> dict[str, str]:
     """
     Crea usuario, en caso de que ya exista un usuario con el correo especificado retorna 0. En el caso
@@ -69,7 +69,7 @@ async def create_user(user: models.User) -> dict[str, str]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/drop_user", status_code=200)
+@app.post("/drop_user", status_code=200, tags=["User"])
 async def drop_user(user: models.onlyToken):
     try:
         userID = jwt.decode(user, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
@@ -81,7 +81,7 @@ async def drop_user(user: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/asign_ticket")
+@app.post("/asign_ticket", tags=["Ticket"])
 async def asign_ticket(info: models.ticket_user):
     """
     Recibe un token de sesion como entrada para asignar un ticket a un determinado usuario.
@@ -110,7 +110,7 @@ async def get_events(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/get_tickets")
+@app.get("/get_tickets", tags=["Ticket"])
 async def get_tickets():
     try:
         result = db.get_all_tickets()
@@ -120,7 +120,7 @@ async def get_tickets():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/get_user")
+@app.post("/get_user", tags=["User"])
 async def get_user(token: models.onlyToken):
     try:
         usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
@@ -135,7 +135,7 @@ async def get_user(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/update_name", status_code=200)
+@app.post("/update_name", status_code=200, tags=["User"])
 async def update_name(user: models.changeName):
     try:
         usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
@@ -148,7 +148,7 @@ async def update_name(user: models.changeName):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/update_pass", status_code=200)
+@app.post("/update_pass", status_code=200, tags=["User"])
 async def update_pass(user: models.changePass):
     try:
         usrID = jwt.decode(user.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
@@ -164,7 +164,7 @@ async def update_pass(user: models.changePass):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/get_tickets_by_autor")
+@app.post("/get_tickets_by_autor", tags=["Ticket"])
 async def get_tickets_by_autor(token: models.onlyToken):
     try:
         usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
@@ -177,7 +177,7 @@ async def get_tickets_by_autor(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/login")
+@app.post("/login", tags=["User"])
 async def login(user: models.log_User) -> dict[str, str]:
     try:
         result = db.get_password_by_email(user.email)
@@ -191,7 +191,7 @@ async def login(user: models.log_User) -> dict[str, str]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/add_ticket")
+@app.post("/add_ticket", tags=["Ticket"])
 async def create_ticket(ticket: models.Ticket):
     try:
         result = db.add_ticket(

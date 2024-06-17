@@ -80,6 +80,34 @@ def get_userID_by_email(email: str) -> int:
     return 0
 
 
+def get_admins():
+    cursor = database_connect().cursor()
+    line = "SELECT rolID,userID FROM Rol WHERE rol='admin';"
+    cursor.execute(line)
+    res = []
+    user = []
+    for row in cursor.fetchall():
+        admin = []
+        admin.append(row.rolID)
+        admin.append(row.userID)
+        user.append(row.userID)
+        res.append(admin)
+
+    line = f"SELECT name FROM Users WHERE userID IN ({user});"
+    line = line.replace('[','').replace(']','')
+    cursor.execute(line)
+    resFinal = []
+    i = 0
+    for row in cursor.fetchall():
+        admin = {
+            "nombre": row.name,
+            "userID": user[i],
+            "rolID": res[i][0]
+        }
+        resFinal.append(admin)
+    return resFinal
+
+
 def get_user_by_ID(id: int) -> List[str]:
     """
     Devuelve un arreglo con 2 elementos [nombre,email].

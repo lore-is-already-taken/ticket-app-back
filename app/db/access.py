@@ -124,13 +124,13 @@ def get_user_by_ID(id: int) -> List[str]:
         mail = row.email
     line = f"SELECT rol FROM Rol WHERE userID='{id}';"
     cursor.execute(line)
+    user = {}
     for row in cursor.fetchall():
         user = {
             "nombre":name,
             "email": mail,
             "rol": row.rol
         }
-        res.append(user)
     return user
 
 

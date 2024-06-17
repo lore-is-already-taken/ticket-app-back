@@ -127,6 +127,7 @@ async def get_tickets():
         result = db.get_all_tickets()
         if result != []:
             return result
+        raise HTTPException(status_code=501, detail="No hay tickets")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -138,7 +139,7 @@ async def get_user(token: models.onlyToken):
             "user_id"
         ]
         result = db.get_user_by_ID(usrID)
-        if result != []:
+        if result != {}:
             return result
         else:
             raise HTTPException(status_code=501, detail="Token invalido")

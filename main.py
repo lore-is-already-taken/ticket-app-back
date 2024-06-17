@@ -205,7 +205,7 @@ async def login(user: models.log_User) -> dict[str, str]:
 @app.post("/add_ticket", tags=["Ticket"])
 async def create_ticket(ticket: models.Ticket):
     try:
-        usrID = jwt.decode(ticket, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         result = db.add_ticket(
             usrID, ticket.contenido, ticket.categoria, ticket.prioridad
         )

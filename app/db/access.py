@@ -117,11 +117,21 @@ def get_user_by_ID(id: int) -> List[str]:
     cursor = database_connect().cursor()
     line = f"SELECT name,email FROM Users WHERE userID='{id}';"
     cursor.execute(line)
-    res = []
+    name = ""
+    mail = ""
     for row in cursor.fetchall():
-        row = {"name": row.name, "email": row.email}
-        res.append(row)
-    return res
+        name = row.name
+        mail = row.email
+    line = f"SELECT rol FROM Rol WHERE userID='{id}';"
+    cursor.execute(line)
+    for row in cursor.fetchall():
+        user = {
+            "nombre":name,
+            "email": mail,
+            "rol": row.rol
+        }
+        res.append(user)
+    return user
 
 
 def get_password_by_email(email: str) -> str:

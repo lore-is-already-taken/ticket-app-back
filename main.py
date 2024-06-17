@@ -56,7 +56,7 @@ async def create_user(user: models.User) -> dict[str, str]:
         verif = db.get_userID_by_email(user.email)
         if verif != 0:
             # Si verif es distinto de 0 es porque encontro un usuario con ese correo
-            return {"access_token": "0"}
+            raise HTTPException(status_code=501, detail="Ya existe un usuario con ese correo")
         result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
             user_id = db.get_userID_by_email(user.email)
@@ -139,9 +139,9 @@ async def get_user(token: models.onlyToken):
         ]
         result = db.get_user_by_ID(usrID)
         if result != []:
-            return result[0]
+            return result
         else:
-            return {"msg": "ID especificado no existe"}
+            raise HTTPException(status_code=501, detail="Token invalido")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

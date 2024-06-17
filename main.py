@@ -168,7 +168,7 @@ async def update_pass(user: models.changePass):
         if res:
             return {"msg": "Success"}
         else:
-            return {"msg": "Wrong password"}
+            raise HTTPException(status_code=501, detail="Wrong password")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

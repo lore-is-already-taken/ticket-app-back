@@ -81,7 +81,9 @@ async def get_admins():
 @app.post("/drop_user", status_code=200, tags=["User"])
 async def drop_user(token: models.onlyToken):
     try:
-        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         if db.delete_user(userID):
             return {"msg": "Success"}
         else:
@@ -191,9 +193,9 @@ async def login(user: models.log_User) -> dict[str, str]:
     try:
         result = db.get_password_by_email(user.email)
         if result != user.password:
-            return {"access_token": "0"}
+            return HTTPException(status_code=500, detail=str("user not exist"))
         user_id = db.get_userID_by_email(user.email)
-        payload = {"user_id": user_id, "expires": time.time() + 600}
+        payload = {"user_id": user_id}
         token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
         return {"access_token": token}
     except Exception as e:

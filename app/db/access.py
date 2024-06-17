@@ -161,11 +161,12 @@ def get_tickets_by_autor(userID: int) -> List:
 
     if rolID == "":
         return []
-    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
+    line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "resposable": row.resposable,
             "contenido": row.contenido,
@@ -189,6 +190,7 @@ def get_all_tickets() -> List:
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "responsable": row.responsable,
             "contenido": row.contenido,
@@ -223,11 +225,12 @@ def get_tickets_by_responsable(userID: int) -> List:
     for row in cursor.fetchall():
         rolID = row.rolID
 
-    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
+    line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "responsable": row.responsable,
             "contenido": row.contenido,
@@ -253,11 +256,12 @@ def general_get_tickets(userID: int) -> List:
     if rolID == "":
         return []
 
-    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}' OR responsable='';"
+    line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}' OR responsable='';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "responsable": row.responsable,
             "contenido": row.contenido,

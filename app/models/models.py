@@ -14,7 +14,7 @@ class log_User(BaseModel):
 
 
 class Ticket(BaseModel):
-    autor: str
+    access_token: str
     contenido: str
     categoria: str
     prioridad: int

@@ -69,6 +69,15 @@ async def create_user(user: models.User) -> dict[str, str]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/get_admins")
+async def get_admins():
+    try:
+        res = db.get_admins()
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/drop_user", status_code=200)
 async def drop_user(user: models.onlyToken):
     try:

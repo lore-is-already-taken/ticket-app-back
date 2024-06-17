@@ -63,8 +63,7 @@ async def create_user(user: models.User) -> dict[str, str]:
             payload = {"user_id": user_id, "expires": time.time() + 600}
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}
-        else:
-            raise HTTPException(status_code=501, detail="No se pudo ingresar")
+        raise HTTPException(status_code=501, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -156,6 +155,7 @@ async def update_name(user: models.changeName):
         res = db.update_name(usrID, user.name)
         if res:
             return {"msg": "Success"}
+        raise HTTPException(status_code=501, detail="No se pudo actualizar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -170,8 +170,7 @@ async def update_pass(user: models.changePass):
 
         if res:
             return {"msg": "Success"}
-        else:
-            raise HTTPException(status_code=501, detail="Wrong password")
+        raise HTTPException(status_code=501, detail="Wrong password")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -183,8 +182,7 @@ async def get_tickets_by_autor(token: models.onlyToken):
         result = db.get_tickets_by_autor(usrID)
         if len(result) == 0:
             return result
-        else:
-            raise HTTPException(status_code=501, detail="No tickets")
+        raise HTTPException(status_code=501, detail="No tickets")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -212,6 +210,7 @@ async def create_ticket(ticket: models.Ticket):
         )
         if result:
             return {"msg": "Ticket ingresado"}
+        raise HTTPException(status_code=501, detail="No se pudo insertar el ticket")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -222,8 +221,7 @@ async def create_evento(evento: models.Evento):
         result = db.add_Evento(evento.ticketID, evento.contenido)
         if result:
             return {"msg": "Evento ingresado"}
-        else:
-            raise HTTPException(status_code=501, detail="No se puede :/")
+        raise HTTPException(status_code=501, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

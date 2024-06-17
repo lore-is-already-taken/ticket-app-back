@@ -64,7 +64,7 @@ async def create_user(user: models.User) -> dict[str, str]:
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}
         else:
-            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+            raise HTTPException(status_code=501, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -87,7 +87,7 @@ async def drop_user(token: models.onlyToken):
         if db.delete_user(userID):
             return {"msg": "Success"}
         else:
-            return {"msg": "Failed"}
+            raise HTTPException(status_code=501, detail="Error al eliminar usuario")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -107,7 +107,7 @@ async def asign_ticket(info: models.ticket_user):
         if db.asign_responsable(userID, info.ticket_id):
             return {"msg": "Success"}
         else:
-            return {"msg": "Failed"}
+            raise HTTPException(status_code=501, detail="No se pudo asignar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -183,7 +183,7 @@ async def get_tickets_by_autor(token: models.onlyToken):
         if len(result) == 0:
             return result
         else:
-            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+            raise HTTPException(status_code=501, detail="No tickets")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -193,7 +193,7 @@ async def login(user: models.log_User) -> dict[str, str]:
     try:
         result = db.get_password_by_email(user.email)
         if result != user.password:
-            return HTTPException(status_code=500, detail=str("user not exist"))
+            return HTTPException(status_code=501, detail=str("Wrong password"))
         user_id = db.get_userID_by_email(user.email)
         payload = {"user_id": user_id}
         token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -211,8 +211,6 @@ async def create_ticket(ticket: models.Ticket):
         )
         if result:
             return {"msg": "Ticket ingresado"}
-        else:
-            raise HTTPException(status_code=500, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -224,7 +222,7 @@ async def create_evento(evento: models.Evento):
         if result:
             return {"msg": "Evento ingresado"}
         else:
-            raise HTTPException(status_code=500, detail="No se puede :/")
+            raise HTTPException(status_code=501, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

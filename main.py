@@ -79,9 +79,9 @@ async def get_admins():
 
 
 @app.post("/drop_user", status_code=200, tags=["User"])
-async def drop_user(user: models.onlyToken):
+async def drop_user(token: models.onlyToken):
     try:
-        userID = jwt.decode(user, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         if db.delete_user(userID):
             return {"msg": "Success"}
         else:

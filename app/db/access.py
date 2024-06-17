@@ -364,7 +364,16 @@ def asign_responsable(ticket: int, user: int) -> bool:
 
 def delete_user(usr: int) -> bool:
     cursor = database_connect().cursor()
-    line = f"DELETE FROM Users WHERE userID='{usr}';"
+    line = f"SELECT rolID FROM Rol WHERE userID='{usr}';"
+    cursor.execute(line)
+    rolID = ""
+    for row in cursor.fetchall():
+        rolID = row.rolID
+
+    line = f"DELETE FROM Rol WHERE rolID={rolID};"
+    cursor.execute(line)
+    cursor.commit()
+    line = f"DELETE FROM Users WHERE userID={usr};"
     cursor.execute(line)
     cursor.commit()
     return True

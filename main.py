@@ -1,4 +1,5 @@
 import time
+from typing import Dict
 
 import jwt
 import uvicorn
@@ -56,7 +57,9 @@ async def create_user(user: models.User) -> dict[str, str]:
         verif = db.get_userID_by_email(user.email)
         if verif != 0:
             # Si verif es distinto de 0 es porque encontro un usuario con ese correo
-            raise HTTPException(status_code=501, detail="Ya existe un usuario con ese correo")
+            raise HTTPException(
+                status_code=501, detail="Ya existe un usuario con ese correo"
+            )
         result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
             user_id = db.get_userID_by_email(user.email)
@@ -115,7 +118,9 @@ async def assign_ticket(info: models.ticket_user):
 @app.post("/get_events", tags=["Evento"])
 async def get_events(token: models.onlyToken):
     try:
-        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         return db.get_events_by_userID(userID)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -186,11 +191,12 @@ async def update_pass(user: models.changePass):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
 @app.post("/get_tickets_by_responsable", tags=["Ticket"])
 async def get_tickets_by_responsable(token: models.onlyToken):
     try:
-        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         result = db.get_tickets_by_responsable(usrID)
         if result != []:
             return result
@@ -200,14 +206,18 @@ async def get_tickets_by_responsable(token: models.onlyToken):
 
 
 @app.post("/get_tickets_by_autor", tags=["Ticket"])
-async def get_tickets_by_autor(token: models.onlyToken):
+async def get_tickets_by_autor(token: Dict[str, str]):
     try:
-        usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(
+            token["access_token"], JWT_SECRET, algorithms=[JWT_ALGORITHM]
+        )["user_id"]
+        print(f"user aidi_ {usrID}")
         result = db.get_tickets_by_autor(usrID)
         if result != []:
             return result
         else:
             raise HTTPException(status_code=501, detail="No tickets")
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -229,7 +239,9 @@ async def login(user: models.log_User) -> dict[str, str]:
 @app.post("/add_ticket", tags=["Ticket"])
 async def create_ticket(ticket: models.Ticket):
     try:
-        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         result = db.add_ticket(
             usrID, ticket.contenido, ticket.categoria, ticket.prioridad
         )

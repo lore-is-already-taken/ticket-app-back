@@ -162,14 +162,13 @@ async def get_user(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/get_user_by_ID", tags=["User"])
-async def get_user_by_ID(id: models.onlyID):
+@app.post("/get_user_by_rol", tags=["User"])
+async def get_user_by_rol(id: models.onlyID):
     try:
-        result = db.get_user_by_ID(id)
+        result = db.get_user_by_rolID(id.id)
         if result != {}:
             return result
-        else:
-            raise HTTPException(status_code=501, detail="Token invalido")
+        raise HTTPException(status_code=501, detail="Not Found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

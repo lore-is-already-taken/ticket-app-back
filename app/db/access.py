@@ -145,11 +145,35 @@ def get_user_by_ID(id: int) -> List[str]:
     for row in cursor.fetchall():
         name = row.name
         mail = row.email
+    print(f"name: {name}\nmail: {mail}")
     line = f"SELECT rol FROM Rol WHERE userID='{id}';"
     cursor.execute(line)
     user = {}
     for row in cursor.fetchall():
         user = {"nombre": name, "email": mail, "rol": row.rol}
+    return user
+
+
+def get_user_by_rolID(rol: int):
+    line = f"SELECT userID,rol FROM Rol WHERE rolID='{rol}';"
+    cursor = database_connect().cursor()
+    cursor.execute(line)
+    userID = 0
+    for row in cursor.fetchall():
+        userID = row.userID
+        nombreRol = row.rol
+
+    user = {}
+    if userID == 0:
+        return user
+    line = f"SELECT name,email FROM Users WHERE userID='{userID}';"
+    cursor.execute(line)
+    for row in cursor.fetchall():
+        user = {
+            "name":row.name,
+            "email":row.email,
+            "rol":nombreRol
+        }
     return user
 
 

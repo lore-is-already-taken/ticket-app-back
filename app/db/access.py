@@ -94,16 +94,12 @@ def get_admins():
         res.append(admin)
 
     line = f"SELECT name FROM Users WHERE userID IN ({user});"
-    line = line.replace('[','').replace(']','')
+    line = line.replace("[", "").replace("]", "")
     cursor.execute(line)
     resFinal = []
     i = 0
     for row in cursor.fetchall():
-        admin = {
-            "nombre": row.name,
-            "userID": user[i],
-            "rolID": res[i][0]
-        }
+        admin = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
         resFinal.append(admin)
     return resFinal
 
@@ -126,11 +122,7 @@ def get_user_by_ID(id: int) -> List[str]:
     cursor.execute(line)
     user = {}
     for row in cursor.fetchall():
-        user = {
-            "nombre":name,
-            "email": mail,
-            "rol": row.rol
-        }
+        user = {"nombre": name, "email": mail, "rol": row.rol}
     return user
 
 
@@ -363,7 +355,7 @@ def update_pass(usr: int, oldPassword: str, newPassword: str) -> bool:
     return True
 
 
-def asign_responsable(ticket: int, user: int) -> bool:
+def assign_responsable(ticket: int, user: int) -> bool:
     """
     Usando el userID encuentra el rolID correspondiente y lo usa para asignar el valor responsable a
     un ticket usando el ticketID.

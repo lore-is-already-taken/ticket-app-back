@@ -92,8 +92,8 @@ async def drop_user(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/asign_ticket", tags=["Ticket"])
-async def asign_ticket(info: models.ticket_user):
+@app.post("/assign_ticket", tags=["Ticket"])
+async def assign_ticket(info: models.ticket_user):
     """
     Recibe un token de sesion como entrada para asignar un ticket a un determinado usuario.
     El objeto consiste de dos campos:
@@ -104,7 +104,7 @@ async def asign_ticket(info: models.ticket_user):
         userID = jwt.decode(info.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
-        if db.asign_responsable(userID, info.ticket_id):
+        if db.assign_responsable(userID, info.ticket_id):
             return {"msg": "Success"}
         else:
             raise HTTPException(status_code=501, detail="No se pudo asignar")

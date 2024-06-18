@@ -162,8 +162,8 @@ async def get_user(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/get_user2", tags=["User"])
-async def get_user2(id: models.onlyID):
+@app.post("/get_user_by_ID", tags=["User"])
+async def get_user_by_ID(id: models.onlyID):
     try:
         result = db.get_user_by_ID(id)
         if result != {}:

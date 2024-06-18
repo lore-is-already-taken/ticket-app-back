@@ -379,10 +379,8 @@ def assign_responsable(ticket: int, user: int) -> bool:
     if rolID == "":
         return False
 
-    line_assignTicket = (
-        f"UPDATE Ticket SET responsable='{rolID}' WHERE ticketID='{ticket}';"
-    )
-    cursor.execute(line_assignTicket)
+    line = f"UPDATE Ticket SET responsable='{rolID}' WHERE ticketID='{ticket}';"
+    cursor.execute(line)
     cursor.commit()
     return True
 

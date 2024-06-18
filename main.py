@@ -176,12 +176,25 @@ async def update_pass(user: models.changePass):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+@app.post("/get_tickets_by_responsable", tags=["Ticket"])
+async def get_tickets_by_responsable(token: models.onlyToken):
+    try:
+        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        result = db.get_tickets_by_responsable(usrID)
+        if result != []:
+            return result
+        raise HTTPException(status_code=501, detail="No tickets")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/get_tickets_by_autor", tags=["Ticket"])
 async def get_tickets_by_autor(token: models.onlyToken):
     try:
         usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         result = db.get_tickets_by_autor(usrID)
-        if len(result) == 0:
+        if result != []:
             return result
         else:
             raise HTTPException(status_code=501, detail="No tickets")

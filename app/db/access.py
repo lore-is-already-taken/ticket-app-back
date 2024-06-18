@@ -38,7 +38,14 @@ def add_user(name: str, email: str, password: str, rol: str) -> int:
 
 def add_ticket(autor: int, contenido: str, categoria: str, prioridad: int) -> bool:
     cursor = database_connect().cursor()
-    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{autor}','{contenido}','{categoria}','{prioridad}');"
+    line = f"SELECT rolID FROM Rol WHERE userID='{autor}';"
+    cursor.execute(line)
+    rolID = ""
+    for row in cursor.fetchall():
+        rolID = row.rolID
+    if rolID == "":
+        return False
+    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{rolID}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
     cursor.commit()
     return True
@@ -160,7 +167,7 @@ def get_tickets_by_autor(userID: int) -> List:
         tick = {
             "ticketID": row.ticketID,
             "autor": row.autor,
-            "resposable": row.resposable,
+            "resposable": row.responsable,
             "contenido": row.contenido,
             "categoria": row.categoria,
             "prioridad": row.prioridad,

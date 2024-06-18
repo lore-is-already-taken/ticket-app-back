@@ -218,11 +218,16 @@ def get_eventos_by_ticketID(ticketID: int) -> List:
 
 
 def get_tickets_by_responsable(userID: int) -> List:
+    print("DENTRO DE FUNCION")
     cursor = database_connect().cursor()
+    print("CONECTADO")
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
+    rolID = ""
     for row in cursor.fetchall():
         rolID = row.rolID
+    if rolID == "":
+        return []
 
     line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
     cursor.execute(line)

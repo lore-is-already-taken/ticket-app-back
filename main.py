@@ -112,10 +112,10 @@ async def assign_ticket(info: models.ticket_user):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("get_events")
+@app.post("/get_events")
 async def get_events(token: models.onlyToken):
     try:
-        userID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         return db.get_events_by_userID(userID)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -235,8 +235,7 @@ async def create_evento(evento: models.Evento):
         result = db.add_Evento(evento.ticketID, evento.contenido)
         if result:
             return {"msg": "Evento ingresado"}
-        else:
-            raise HTTPException(status_code=501, detail="No se puede :/")
+        raise HTTPException(status_code=501, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

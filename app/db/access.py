@@ -62,7 +62,7 @@ def add_rol(userID: int, rol: str) -> bool:
 def add_Evento(ticketID: int, contenido: str) -> bool:
     cursor = database_connect().cursor()
     line = (
-        f"INSERT INTO Ticket (ticketID,contenido) VALUES ('{ticketID}','{contenido}');"
+        f"INSERT INTO Evento (ticketID,contenido) VALUES ('{ticketID}','{contenido}');"
     )
     cursor.execute(line)
     cursor.commit()
@@ -327,6 +327,7 @@ def get_events_by_userID(userID: int) -> List:
         tickets.append(row.ticketID)
 
     line = f"SELECT contenido FROM Evento WHERE ticketID IN ({tickets});"
+    line = line.replace('[','').replace(']','')
     cursor.execute(line)
     eventos = []
     for row in cursor.fetchall():

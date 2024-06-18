@@ -1,3 +1,4 @@
+version: '3'
 services:
   api:
     build: .
@@ -6,3 +7,9 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"

@@ -48,3 +48,7 @@ class changePass(BaseModel):
     access_token: str
     oldPass: str
     newPass: str
+
+class Notification(BaseModel):
+    access_token: str
+    message: str

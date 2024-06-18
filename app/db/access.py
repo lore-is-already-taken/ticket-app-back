@@ -385,3 +385,31 @@ def delete_user(usr: int) -> bool:
     cursor.execute(line)
     cursor.commit()
     return True
+
+def add_notification(user_id: int, message: str) -> bool:
+    cursor = database_connect().cursor()
+    line = f"INSERT INTO Notification (userID, message) VALUES ('{user_id}', '{message}');"
+    cursor.execute(line)
+    cursor.commit()
+    return True
+
+def get_notifications(user_id: int) -> List[dict]:
+    cursor = database_connect().cursor()
+    line = f"SELECT notificationID, message FROM Notification WHERE userID='{user_id}';"
+    cursor.execute(line)
+    res = []
+    for row in cursor.fetchall():
+        notification = {
+            "notificationID": row.notificationID,
+            "message": row.message
+        }
+        res.append(notification)
+    return res
+
+def delete_notification(notification_id: int) -> bool:
+    cursor = database_connect().cursor()
+    line = f"DELETE FROM Notification WHERE notificationID={notification_id};"
+    cursor.execute(line)
+    cursor.commit()
+    return True
+

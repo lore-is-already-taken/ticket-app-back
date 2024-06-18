@@ -56,16 +56,15 @@ async def create_user(user: models.User) -> dict[str, str]:
         verif = db.get_userID_by_email(user.email)
         if verif != 0:
             # Si verif es distinto de 0 es porque encontro un usuario con ese correo
-            raise HTTPException(
-                status_code=501, detail="Ya existe un usuario con ese correo"
-            )
+            raise HTTPException(status_code=501, detail="Ya existe un usuario con ese correo")
         result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
             user_id = db.get_userID_by_email(user.email)
             payload = {"user_id": user_id, "expires": time.time() + 600}
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}
-        raise HTTPException(status_code=501, detail="No se pudo ingresar")
+        else:
+            raise HTTPException(status_code=501, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -93,8 +92,8 @@ async def drop_user(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/assign_ticket", tags=["Ticket"])
-async def assign_ticket(info: models.ticket_user):
+@app.post("/asign_ticket", tags=["Ticket"])
+async def asign_ticket(info: models.ticket_user):
     """
     Recibe un token de sesion como entrada para asignar un ticket a un determinado usuario.
     El objeto consiste de dos campos:
@@ -105,7 +104,7 @@ async def assign_ticket(info: models.ticket_user):
         userID = jwt.decode(info.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
-        if db.assign_responsable(userID, info.ticket_id):
+        if db.asign_responsable(userID, info.ticket_id):
             return {"msg": "Success"}
         else:
             raise HTTPException(status_code=501, detail="No se pudo asignar")
@@ -113,10 +112,10 @@ async def assign_ticket(info: models.ticket_user):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/get_events")
+@app.post("get_events")
 async def get_events(token: models.onlyToken):
     try:
-        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        userID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         return db.get_events_by_userID(userID)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -157,7 +156,6 @@ async def update_name(user: models.changeName):
         res = db.update_name(usrID, user.name)
         if res:
             return {"msg": "Success"}
-        raise HTTPException(status_code=501, detail="No se pudo actualizar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -172,7 +170,8 @@ async def update_pass(user: models.changePass):
 
         if res:
             return {"msg": "Success"}
-        raise HTTPException(status_code=501, detail="Wrong password")
+        else:
+            raise HTTPException(status_code=501, detail="Wrong password")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -180,11 +179,12 @@ async def update_pass(user: models.changePass):
 @app.post("/get_tickets_by_autor", tags=["Ticket"])
 async def get_tickets_by_autor(token: models.onlyToken):
     try:
-        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         result = db.get_tickets_by_autor(usrID)
         if len(result) == 0:
             return result
-        raise HTTPException(status_code=501, detail="No tickets")
+        else:
+            raise HTTPException(status_code=501, detail="No tickets")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -206,15 +206,12 @@ async def login(user: models.log_User) -> dict[str, str]:
 @app.post("/add_ticket", tags=["Ticket"])
 async def create_ticket(ticket: models.Ticket):
     try:
-        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
-            "user_id"
-        ]
+        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         result = db.add_ticket(
             usrID, ticket.contenido, ticket.categoria, ticket.prioridad
         )
         if result:
             return {"msg": "Ticket ingresado"}
-        raise HTTPException(status_code=501, detail="No se pudo insertar el ticket")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -225,7 +222,38 @@ async def create_evento(evento: models.Evento):
         result = db.add_Evento(evento.ticketID, evento.contenido)
         if result:
             return {"msg": "Evento ingresado"}
-        raise HTTPException(status_code=501, detail="No se puede :/")
+        else:
+            raise HTTPException(status_code=501, detail="No se puede :/")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/add_notification", tags=["Notification"])
+async def create_notification(notification: models.Notification):
+    try:
+        usrID = jwt.decode(notification.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        result = db.add_notification(usrID, notification.message)
+        if result:
+            return {"msg": "Notification added"}
+        raise HTTPException(status_code=501, detail="no se pudo crear")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/get_notifications", tags=["Notification"])
+async def get_notifications(token: models.onlyToken):
+    try:
+        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        notifications = db.get_notifications(usrID)
+        return notifications
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/delete_notification", tags=["Notification"])
+async def delete_notification(notification_id: int):
+    try:
+        result = db.delete_notification(notification_id)
+        if result:
+            return {"msg": "Notification deleted"}
+        raise HTTPException(status_code=501, detail="no se pudo borrar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -218,9 +218,7 @@ def get_eventos_by_ticketID(ticketID: int) -> List:
 
 
 def get_tickets_by_responsable(userID: int) -> List:
-    print("DENTRO DE FUNCION")
     cursor = database_connect().cursor()
-    print("CONECTADO")
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
     rolID = ""

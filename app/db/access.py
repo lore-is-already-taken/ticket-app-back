@@ -364,17 +364,19 @@ def update_pass(usr: int, oldPassword: str, newPassword: str) -> bool:
     return True
 
 
-def assign_responsable(ticket: int, user: int) -> bool:
+def assign_responsable(user: int, ticket: int) -> bool:
     """
     Usando el userID encuentra el rolID correspondiente y lo usa para asignar el valor responsable a
     un ticket usando el ticketID.
     Devuelve True si la asignacion fue exitosa, y False si no se encontro ningun rol asociado a ese user.
     """
+    print(f"ticket: {ticket}\nuser: {user}")
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{user}';"
     cursor.execute(line)
     rolID = ""
     for row in cursor.fetchall():
+        print(row)
         rolID = row.rolID
     if rolID == "":
         return False

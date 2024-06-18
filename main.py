@@ -69,7 +69,7 @@ async def create_user(user: models.User) -> dict[str, str]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/get_admins")
+@app.get("/get_admins", tags=["User"])
 async def get_admins():
     try:
         res = db.get_admins()
@@ -112,11 +112,21 @@ async def assign_ticket(info: models.ticket_user):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/get_events")
+@app.post("/get_events", tags=["Evento"])
 async def get_events(token: models.onlyToken):
     try:
         userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         return db.get_events_by_userID(userID)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/close_event", tags=["Evento"])
+async def close_event(ticket: models.onlyID):
+    try:
+        if db.close_ticket(ticket.id):
+            return {"msg": "Success"}
+        raise HTTPException(status_code=501, detail="No se pudo cerrar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

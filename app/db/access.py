@@ -330,10 +330,7 @@ def get_events_by_userID(userID: int) -> List:
     cursor.execute(line)
     eventos = []
     for row in cursor.fetchall():
-        evento = {
-            "contenido": row.contenido,
-            "ticketID": row.ticketID
-        }
+        evento = {"contenido": row.contenido, "ticketID": row.ticketID}
         eventos.append(evento)
     return eventos
 
@@ -382,8 +379,10 @@ def assign_responsable(ticket: int, user: int) -> bool:
     if rolID == "":
         return False
 
-    line = f"UPDATE Ticket SET responsable='{rolID}' WHERE ticketID='{ticket}';"
-    cursor.execute(line)
+    line_assignTicket = (
+        f"UPDATE Ticket SET responsable='{rolID}' WHERE ticketID='{ticket}';"
+    )
+    cursor.execute(line_assignTicket)
     cursor.commit()
     return True
 
@@ -404,12 +403,16 @@ def delete_user(usr: int) -> bool:
     cursor.commit()
     return True
 
+
 def add_notification(user_id: int, message: str) -> bool:
     cursor = database_connect().cursor()
-    line = f"INSERT INTO Notification (userID, message) VALUES ('{user_id}', '{message}');"
+    line = (
+        f"INSERT INTO Notification (userID, message) VALUES ('{user_id}', '{message}');"
+    )
     cursor.execute(line)
     cursor.commit()
     return True
+
 
 def get_notifications(user_id: int) -> List[dict]:
     cursor = database_connect().cursor()
@@ -417,12 +420,10 @@ def get_notifications(user_id: int) -> List[dict]:
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
-        notification = {
-            "notificationID": row.notificationID,
-            "message": row.message
-        }
+        notification = {"notificationID": row.notificationID, "message": row.message}
         res.append(notification)
     return res
+
 
 def delete_notification(notification_id: int) -> bool:
     cursor = database_connect().cursor()
@@ -430,4 +431,3 @@ def delete_notification(notification_id: int) -> bool:
     cursor.execute(line)
     cursor.commit()
     return True
-

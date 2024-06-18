@@ -56,7 +56,9 @@ async def create_user(user: models.User) -> dict[str, str]:
         verif = db.get_userID_by_email(user.email)
         if verif != 0:
             # Si verif es distinto de 0 es porque encontro un usuario con ese correo
-            raise HTTPException(status_code=501, detail="Ya existe un usuario con ese correo")
+            raise HTTPException(
+                status_code=501, detail="Ya existe un usuario con ese correo"
+            )
         result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
             user_id = db.get_userID_by_email(user.email)
@@ -91,8 +93,8 @@ async def drop_user(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/asign_ticket", tags=["Ticket"])
-async def asign_ticket(info: models.ticket_user):
+@app.post("/assign_ticket", tags=["Ticket"])
+async def assign_ticket(info: models.ticket_user):
     """
     Recibe un token de sesion como entrada para asignar un ticket a un determinado usuario.
     El objeto consiste de dos campos:
@@ -103,7 +105,7 @@ async def asign_ticket(info: models.ticket_user):
         userID = jwt.decode(info.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
-        if db.asign_responsable(userID, info.ticket_id):
+        if db.assign_responsable(userID, info.ticket_id):
             return {"msg": "Success"}
         else:
             raise HTTPException(status_code=501, detail="No se pudo asignar")
@@ -204,7 +206,9 @@ async def login(user: models.log_User) -> dict[str, str]:
 @app.post("/add_ticket", tags=["Ticket"])
 async def create_ticket(ticket: models.Ticket):
     try:
-        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         result = db.add_ticket(
             usrID, ticket.contenido, ticket.categoria, ticket.prioridad
         )

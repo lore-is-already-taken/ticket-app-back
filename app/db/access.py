@@ -304,15 +304,14 @@ def get_events_by_userID(userID: int) -> List:
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{userID}';"
     cursor.execute(line)
-    if len(cursor.fetchall) == 0:
-        return []
+    rolID = ""
     for row in cursor.fetchall():
         rolID = row.rolID
+    if rolID == "":
+        return []
 
     line = f"SELECT ticketID FROM Ticket WHERE autor='{rolID}';"
     cursor.execute(line)
-    if len(cursor.fetchall) == 0:
-        return []
     tickets = []
     for row in cursor.fetchall():
         tickets.append(row.ticketID)
@@ -321,7 +320,10 @@ def get_events_by_userID(userID: int) -> List:
     cursor.execute(line)
     eventos = []
     for row in cursor.fetchall():
-        evento = {"contenido": row.contenido}
+        evento = {
+            "contenido": row.contenido,
+            "ticketID": row.ticketID
+        }
         eventos.append(evento)
     return eventos
 

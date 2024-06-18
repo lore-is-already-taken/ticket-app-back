@@ -167,7 +167,7 @@ def get_tickets_by_autor(userID: int) -> List:
         tick = {
             "ticketID": row.ticketID,
             "autor": row.autor,
-            "resposable": row.resposable,
+            "resposable": row.responsable,
             "contenido": row.contenido,
             "categoria": row.categoria,
             "prioridad": row.prioridad,

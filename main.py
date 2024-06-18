@@ -105,10 +105,9 @@ async def assign_ticket(info: models.ticket_user):
             "user_id"
         ]
         res = db.assign_responsable(userID, info.ticket_id)
-        if res:
+        if res == True:
             return {"msg": "Success"}
-        else:
-            raise HTTPException(status_code=501, detail="No se pudo asignar")
+        raise HTTPException(status_code=501, detail="No se pudo asignar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

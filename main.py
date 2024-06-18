@@ -180,7 +180,7 @@ async def update_pass(user: models.changePass):
 @app.post("/get_tickets_by_autor", tags=["Ticket"])
 async def get_tickets_by_autor(token: models.onlyToken):
     try:
-        usrID = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         result = db.get_tickets_by_autor(usrID)
         if len(result) == 0:
             return result

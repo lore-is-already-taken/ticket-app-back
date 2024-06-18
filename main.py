@@ -162,6 +162,18 @@ async def get_user(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/get_user2", tags=["User"])
+async def get_user2(id: models.onlyID):
+    try:
+        result = db.get_user_by_ID(id)
+        if result != {}:
+            return result
+        else:
+            raise HTTPException(status_code=501, detail="Token invalido")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/update_name", status_code=200, tags=["User"])
 async def update_name(user: models.changeName):
     try:

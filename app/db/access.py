@@ -374,7 +374,15 @@ def assign_responsable(ticket: int, user: int) -> bool:
     Devuelve True si la asignacion fue exitosa, y False si no se encontro ningun rol asociado a ese user.
     """
     cursor = database_connect().cursor()
-    line = f"UPDATE Ticket SET responsable='{user}' WHERE ticketID='{ticket}';"
+    line = f"SELECT rolID FROM Rol WHERE userID='{user}';"
+    cursor.execute(line)
+    rolID = ""
+    for row in cursor.fetchall():
+        rolID = row.rolID
+    if rolID == "":
+        return False
+
+    line = f"UPDATE Ticket SET responsable='{rolID}' WHERE ticketID='{ticket}';"
     cursor.execute(line)
     cursor.commit()
     return True

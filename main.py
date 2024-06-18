@@ -104,7 +104,8 @@ async def assign_ticket(info: models.ticket_user):
         userID = jwt.decode(info.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
-        if db.assign_responsable(userID, info.ticket_id):
+        res = db.assign_responsable(userID, info.ticket_id)
+        if res:
             return {"msg": "Success"}
         else:
             raise HTTPException(status_code=501, detail="No se pudo asignar")

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 import pyodbc
@@ -36,6 +37,22 @@ def add_user(name: str, email: str, password: str, rol: str) -> int:
     return userID
 
 
+def update_event(ticket: int, estado: int,cursor):
+    if estado == 1:
+        evento = "Ticket creado"
+    elif estado == 2:
+        evento = "Ticket asignado"
+    elif estado == 3:
+        evento = "Ticket cerrado"
+    else:
+        return False
+
+    evento = f"{datetime.now().strftime("%d-%m-%Y %H:%M")} - {evento}"
+    line = f"INSERT INTO Evento (contenido,ticketID) VALUES ('{evento}','{ticket}')"
+    cursor.execute(line)
+    return True
+
+
 def add_ticket(autor: int, contenido: str, categoria: str, prioridad: int) -> bool:
     cursor = database_connect().cursor()
     line = f"SELECT rolID FROM Rol WHERE userID='{autor}';"
@@ -45,8 +62,11 @@ def add_ticket(autor: int, contenido: str, categoria: str, prioridad: int) -> bo
         rolID = row.rolID
     if rolID == "":
         return False
-    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) VALUES ('{rolID}','{contenido}','{categoria}','{prioridad}');"
+    line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) OUTPUT INSERTED.ticketID VALUES ('{rolID}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
+    ticketID = cursor.fetchone()[0]
+    if not update_event(ticketID,1,cursor):
+        return False
     cursor.commit()
     return True
 

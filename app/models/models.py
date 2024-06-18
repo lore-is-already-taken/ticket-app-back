@@ -53,6 +53,3 @@ class changePass(BaseModel):
     oldPass: str
     newPass: str
 
-class Notification(BaseModel):
-    access_token: str
-    message: str

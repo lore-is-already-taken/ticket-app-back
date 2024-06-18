@@ -249,36 +249,6 @@ async def create_evento(evento: models.Evento):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/add_notification", tags=["Notification"])
-async def create_notification(notification: models.Notification):
-    try:
-        usrID = jwt.decode(notification.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
-        result = db.add_notification(usrID, notification.message)
-        if result:
-            return {"msg": "Notification added"}
-        raise HTTPException(status_code=501, detail="no se pudo crear")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/get_notifications", tags=["Notification"])
-async def get_notifications(token: models.onlyToken):
-    try:
-        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
-        notifications = db.get_notifications(usrID)
-        return notifications
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/delete_notification", tags=["Notification"])
-async def delete_notification(notification_id: int):
-    try:
-        result = db.delete_notification(notification_id)
-        if result:
-            return {"msg": "Notification deleted"}
-        raise HTTPException(status_code=501, detail="no se pudo borrar")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000)

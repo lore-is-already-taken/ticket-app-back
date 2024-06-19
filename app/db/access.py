@@ -337,7 +337,7 @@ def filtered_get_tickets(categoria: str) -> List:
             "categoria": row.categoria,
             "review": row.review,
             "prioridad": row.prioridad,
-            "textoReview": row.textoReview,
+            "textoReview": row.textoReview
         }
         res.append(tick)
     return res

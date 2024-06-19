@@ -149,6 +149,9 @@ async def get_tickets():
 
 @app.post("/get_filtered_tickets", tags=["Ticket"])
 async def get_filtered_tickets(input: models.random_string):
+    '''
+    Obtiene todos los tickets sin responsable asignado y correspondientes a una determinada categoria.
+    '''
     try:
         result = db.filtered_get_tickets(input.input)
         if result != []:

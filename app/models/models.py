@@ -53,3 +53,6 @@ class changePass(BaseModel):
     oldPass: str
     newPass: str
 
+
+class random_string(BaseModel):
+    input: str

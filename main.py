@@ -147,6 +147,17 @@ async def get_tickets():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/get_filtered_tickets", tags=["Ticket"])
+async def get_filtered_tickets(input: models.random_string):
+    try:
+        result = db.filtered_get_tickets(input.input)
+        if result != []:
+            return result
+        raise HTTPException(status_code=501, detail="No hay tickets")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/get_user", tags=["User"])
 async def get_user(token: models.onlyToken):
     try:
@@ -258,6 +269,7 @@ async def create_ticket(ticket: models.Ticket):
         )
         if result:
             return {"msg": "Ticket ingresado"}
+        raise HTTPException(status_code=501, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

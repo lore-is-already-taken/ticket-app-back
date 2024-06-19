@@ -325,7 +325,7 @@ def filtered_get_tickets(categoria: str) -> List:
     Obtiene todos los tickets de una determinada categoria, que no esten asignados o asignados a un usuario en particular.
     """
     cursor = database_connect().cursor()
-    line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE (responsable IS NULL AND categoria='{categoria}');"
+    line = f"SELECT * FROM Ticket WHERE (responsable IS NULL AND categoria='{categoria}');"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():

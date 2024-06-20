@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 import pyodbc
 
@@ -37,7 +37,7 @@ def add_user(name: str, email: str, password: str, rol: str) -> int:
     return userID
 
 
-def update_event(ticket: int, estado: int,cursor):
+def update_event(ticket: int, estado: int, cursor):
     if estado == 1:
         evento = "Ticket creado"
     elif estado == 2:
@@ -65,7 +65,7 @@ def add_ticket(autor: int, contenido: str, categoria: str, prioridad: int) -> bo
     line = f"INSERT INTO Ticket (autor,contenido,categoria,prioridad) OUTPUT INSERTED.ticketID VALUES ('{rolID}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
     ticketID = cursor.fetchone()[0]
-    if not update_event(ticketID,1,cursor):
+    if not update_event(ticketID, 1, cursor):
         return False
     cursor.commit()
     return True
@@ -169,11 +169,7 @@ def get_user_by_rolID(rol: int):
     line = f"SELECT name,email FROM Users WHERE userID='{userID}';"
     cursor.execute(line)
     for row in cursor.fetchall():
-        user = {
-            "name":row.name,
-            "email":row.email,
-            "rol":nombreRol
-        }
+        user = {"name": row.name, "email": row.email, "rol": nombreRol}
     return user
 
 
@@ -231,11 +227,21 @@ def get_all_tickets() -> List:
     line = f"SELECT * FROM Ticket;"
     cursor.execute(line)
     res = []
+    autores: Dict[int, str] = {}
     for row in cursor.fetchall():
+        if not row.autor in autores:
+            nombre = get_user_by_rolID(row.autor)["name"]
+            autores.update({row.autor: nombre})
+        responsable = ""
+        if row.responsable == None:
+            responsable = "No asignado"
+        elif not row.responsable in autores:
+            nombre = get_user_by_rolID(row.responsable)["name"]
+            autores.update({row.responsable: nombre})
         tick = {
             "ticketID": row.ticketID,
-            "autor": row.autor,
-            "responsable": row.responsable,
+            "autor": autores[row.autor],
+            "responsable": responsable if responsable!="" else autores[row.responsable],
             "contenido": row.contenido,
             "categoria": row.categoria,
             "prioridad": row.prioridad,
@@ -325,7 +331,9 @@ def filtered_get_tickets(categoria: str) -> List:
     Obtiene todos los tickets de una determinada categoria, que no esten asignados o asignados a un usuario en particular.
     """
     cursor = database_connect().cursor()
-    line = f"SELECT * FROM Ticket WHERE (responsable IS NULL AND categoria='{categoria}');"
+    line = (
+        f"SELECT * FROM Ticket WHERE (responsable IS NULL AND categoria='{categoria}');"
+    )
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
@@ -337,7 +345,7 @@ def filtered_get_tickets(categoria: str) -> List:
             "categoria": row.categoria,
             "review": row.review,
             "prioridad": row.prioridad,
-            "textoReview": row.textoReview
+            "textoReview": row.textoReview,
         }
         res.append(tick)
     return res
@@ -364,7 +372,7 @@ def get_events_by_userID(userID: int) -> List:
         tickets.append(row.ticketID)
 
     line = f"SELECT contenido FROM Evento WHERE ticketID IN ({tickets});"
-    line = line.replace('[','').replace(']','')
+    line = line.replace("[", "").replace("]", "")
     cursor.execute(line)
     eventos = []
     for row in cursor.fetchall():
@@ -419,14 +427,14 @@ def assign_responsable(user: int, ticket: int) -> bool:
 
     line = f"UPDATE Ticket SET responsable='{rolID}' WHERE ticketID='{ticket}';"
     cursor.execute(line)
-    update_event(ticket,2,cursor)
+    update_event(ticket, 2, cursor)
     cursor.commit()
     return True
 
 
 def close_ticket(ticket: int) -> bool:
     cursor = database_connect().cursor()
-    if not update_event(ticket,3,cursor):
+    if not update_event(ticket, 3, cursor):
         return False
     cursor.commit()
     return True
@@ -447,4 +455,3 @@ def delete_user(usr: int) -> bool:
     cursor.execute(line)
     cursor.commit()
     return True
-

@@ -336,18 +336,29 @@ def filtered_get_tickets(categoria: str) -> List:
     )
     cursor.execute(line)
     res = []
+    autores: Dict[int, str] = {}
     for row in cursor.fetchall():
+        if not row.autor in autores:
+            nombre = get_user_by_rolID(row.autor)["name"]
+            autores.update({row.autor: nombre})
+        responsable = ""
+        if row.responsable == None:
+            responsable = "No asignado"
+        elif not row.responsable in autores:
+            nombre = get_user_by_rolID(row.responsable)["name"]
+            autores.update({row.responsable: nombre})
         tick = {
-            "id": row.ticketID,
-            "autor": row.autor,
-            "responsable": row.responsable,
+            "ticketID": row.ticketID,
+            "autor": autores[row.autor],
+            "responsable": responsable if responsable!="" else autores[row.responsable],
             "contenido": row.contenido,
             "categoria": row.categoria,
-            "review": row.review,
             "prioridad": row.prioridad,
+            "review": row.review,
             "textoReview": row.textoReview,
         }
         res.append(tick)
+    
     return res
 
 

@@ -1,5 +1,4 @@
 import time
-from typing import Dict
 
 import jwt
 import uvicorn
@@ -149,9 +148,9 @@ async def get_tickets():
 
 @app.post("/get_filtered_tickets", tags=["Ticket"])
 async def get_filtered_tickets(input: models.random_string):
-    '''
+    """
     Obtiene todos los tickets sin responsable asignado y correspondientes a una determinada categoria.
-    '''
+    """
     try:
         result = db.filtered_get_tickets(input.input)
         if result != []:
@@ -233,9 +232,9 @@ async def get_tickets_by_responsable(token: models.onlyToken):
 @app.post("/get_tickets_by_autor", tags=["Ticket"])
 async def get_tickets_by_autor(token: models.onlyToken):
     try:
-        usrID = jwt.decode(
-            token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]
-        )["user_id"]
+        usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         print(f"user aidi_ {usrID}")
         result = db.get_tickets_by_autor(usrID)
         if result != []:

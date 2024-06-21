@@ -231,10 +231,10 @@ async def get_tickets_by_responsable(token: models.onlyToken):
 
 
 @app.post("/get_tickets_by_autor", tags=["Ticket"])
-async def get_tickets_by_autor(token: Dict[str, str]):
+async def get_tickets_by_autor(token: models.onlyToken):
     try:
         usrID = jwt.decode(
-            token["access_token"], JWT_SECRET, algorithms=[JWT_ALGORITHM]
+            token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM]
         )["user_id"]
         print(f"user aidi_ {usrID}")
         result = db.get_tickets_by_autor(usrID)

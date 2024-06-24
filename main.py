@@ -237,11 +237,7 @@ async def get_tickets_by_autor(token: models.onlyToken):
         ]
         print(f"user aidi_ {usrID}")
         result = db.get_tickets_by_autor(usrID)
-        if result != []:
-            return result
-        else:
-            raise HTTPException(status_code=501, detail="No tickets")
-
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

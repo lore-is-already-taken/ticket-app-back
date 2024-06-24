@@ -203,11 +203,21 @@ def get_tickets_by_autor(userID: int) -> List:
     line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
     cursor.execute(line)
     res = []
+    autores: Dict[int, str] = {}
     for row in cursor.fetchall():
+        if not row.autor in autores:
+            nombre = get_user_by_rolID(row.autor)["name"]
+            autores.update({row.autor: nombre})
+        responsable = ""
+        if row.responsable == None:
+            responsable = "No asignado"
+        elif not row.responsable in autores:
+            nombre = get_user_by_rolID(row.responsable)["name"]
+            autores.update({row.responsable: nombre})
         tick = {
             "ticketID": row.ticketID,
-            "autor": row.autor,
-            "resposable": row.responsable,
+            "autor": autores[row.autor],
+            "responsable": responsable if responsable!="" else autores[row.responsable],
             "contenido": row.contenido,
             "categoria": row.categoria,
             "prioridad": row.prioridad,
@@ -215,6 +225,7 @@ def get_tickets_by_autor(userID: int) -> List:
             "textoReview": row.textoReview,
         }
         res.append(tick)
+    
     return res
 
 
@@ -280,15 +291,25 @@ def get_tickets_by_responsable(userID: int) -> List:
     line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
     cursor.execute(line)
     res = []
+    autores: Dict[int, str] = {}
     for row in cursor.fetchall():
+        if not row.autor in autores:
+            nombre = get_user_by_rolID(row.autor)["name"]
+            autores.update({row.autor: nombre})
+        responsable = ""
+        if row.responsable == None:
+            responsable = "No asignado"
+        elif not row.responsable in autores:
+            nombre = get_user_by_rolID(row.responsable)["name"]
+            autores.update({row.responsable: nombre})
         tick = {
             "ticketID": row.ticketID,
-            "autor": row.autor,
-            "responsable": row.responsable,
+            "autor": autores[row.autor],
+            "responsable": responsable if responsable!="" else autores[row.responsable],
             "contenido": row.contenido,
             "categoria": row.categoria,
-            "review": row.review,
             "prioridad": row.prioridad,
+            "review": row.review,
             "textoReview": row.textoReview,
         }
         res.append(tick)

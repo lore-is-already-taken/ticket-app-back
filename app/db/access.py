@@ -36,6 +36,32 @@ def add_user(name: str, email: str, password: str, rol: str) -> int:
 
     return userID
 
+def get_event(ticketID: int):
+    """
+    Retrieves the most recent event associated with a given ticketID.
+    Returns a dictionary containing the newest event information.
+    """
+    try:
+
+        cursor = database_connect().cursor()
+        line = "SELECT TOP 1 eventoID, ticketID, contenido FROM Evento WHERE ticketID = ? ORDER BY eventoID DESC"
+        cursor.execute(line, (ticketID,))
+        
+        row = cursor.fetchone()
+        return(row.contenido.split('-')[3].strip())
+    except (Exception) as error:
+        print("Error while connecting to PostgreSQL or executing query:", error)
+        return f"An error occurred: {str(error)}"
+    # if row:
+    #     event = {
+    #         "eventoID": row.eventoID,
+    #         "ticketID": row.ticketID,
+    #         "contenido": row.contenido
+    #     }
+    #     print(event)
+    # else:
+    #     return ''  # Return None if no events are found for the given ticketID
+
 
 def update_event(ticket: int, estado: int, cursor):
     if estado == 1:
@@ -51,7 +77,6 @@ def update_event(ticket: int, estado: int, cursor):
     line = f"INSERT INTO Evento (contenido,ticketID) VALUES ('{evento}','{ticket}')"
     cursor.execute(line)
     return True
-
 
 def add_ticket(autor: int, contenido: str, categoria: str, prioridad: int) -> bool:
     cursor = database_connect().cursor()
@@ -171,7 +196,6 @@ def get_user_by_ID(id: int) -> List[str]:
     for row in cursor.fetchall():
         name = row.name
         mail = row.email
-    print(f"name: {name}\nmail: {mail}")
     line = f"SELECT rol FROM Rol WHERE userID='{id}';"
     cursor.execute(line)
     user = {}
@@ -249,6 +273,7 @@ def get_tickets_by_autor(userID: int) -> List:
             "prioridad": row.prioridad,
             "review": row.review,
             "textoReview": row.textoReview,
+            "status": get_event(row.ticketID)
         }
         res.append(tick)
     

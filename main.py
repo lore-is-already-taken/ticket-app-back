@@ -80,6 +80,15 @@ async def get_admins():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/get_normal_user", tags=["User"])
+async def get_normal_user():
+    try:
+        res = db.get_admins()
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/drop_user", status_code=200, tags=["User"])
 async def drop_user(token: models.onlyToken):
     try:
@@ -235,7 +244,6 @@ async def get_tickets_by_autor(token: models.onlyToken):
         usrID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
-        print(f"user aidi_ {usrID}")
         result = db.get_tickets_by_autor(usrID)
         return result
     except Exception as e:
@@ -279,7 +287,11 @@ async def create_ticket_responsable(ticket: models.Ticket_responsable):
             "user_id"
         ]
         result = db.add_ticket_with_responsable(
-            usrID, ticket.id_responsable, ticket.contenido, ticket.categoria, ticket.prioridad
+            usrID,
+            ticket.id_responsable,
+            ticket.contenido,
+            ticket.categoria,
+            ticket.prioridad,
         )
         if result:
             return {"msg": "Ticket ingresado"}

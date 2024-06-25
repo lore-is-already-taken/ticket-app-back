@@ -113,7 +113,7 @@ def add_ticket_with_responsable(autor: int, responsable:int, contenido: str, cat
     if responsableID == "":
         return False
 
-    line = f"INSERT INTO Ticket (autor,responsable,contenido,categoria,prioridad) OUTPUT INSERTED.ticketID VALUES ('{autorID}','{responsableID}','{contenido}','{categoria}','{prioridad}');"
+    line = f"INSERT INTO Ticket (autor,responsable,contenido,categoria,prioridad) OUTPUT INSERTED.ticketID VALUES ('{autorID}','{responsable}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
     ticketID = cursor.fetchone()[0]
     if not update_event(ticketID, 1, cursor):

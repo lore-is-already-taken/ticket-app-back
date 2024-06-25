@@ -56,7 +56,7 @@ async def create_user(user: models.User) -> dict[str, str]:
         verif = db.get_userID_by_email(user.email)
         if verif != 0:
             # Si verif es distinto de 0 es porque encontro un usuario con ese correo
-            return {"access_token": "0"}
+            raise HTTPException(status_code=501, detail="Ya existe un usuario con ese correo")
         result = db.add_user(user.name, user.email, user.password, user.rol)
         if result != "":
             user_id = db.get_userID_by_email(user.email)
@@ -64,7 +64,7 @@ async def create_user(user: models.User) -> dict[str, str]:
             token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
             return {"access_token": token}
         else:
-            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+            raise HTTPException(status_code=501, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -79,19 +79,21 @@ async def get_admins():
 
 
 @app.post("/drop_user", status_code=200, tags=["User"])
-async def drop_user(user: models.onlyToken):
+async def drop_user(token: models.onlyToken):
     try:
-        userID = jwt.decode(user, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
+        userID = jwt.decode(token.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
         if db.delete_user(userID):
             return {"msg": "Success"}
         else:
-            return {"msg": "Failed"}
+            raise HTTPException(status_code=501, detail="Error al eliminar usuario")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/asign_ticket", tags=["Ticket"])
-async def asign_ticket(info: models.ticket_user):
+@app.post("/assign_ticket", tags=["Ticket"])
+async def assign_ticket(info: models.ticket_user):
     """
     Recibe un token de sesion como entrada para asignar un ticket a un determinado usuario.
     El objeto consiste de dos campos:
@@ -102,10 +104,10 @@ async def asign_ticket(info: models.ticket_user):
         userID = jwt.decode(info.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
-        if db.asign_responsable(userID, info.ticket_id):
+        if db.assign_responsable(userID, info.ticket_id):
             return {"msg": "Success"}
         else:
-            return {"msg": "Failed"}
+            raise HTTPException(status_code=501, detail="No se pudo asignar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -125,6 +127,7 @@ async def get_tickets():
         result = db.get_all_tickets()
         if result != []:
             return result
+        raise HTTPException(status_code=501, detail="No hay tickets")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -136,10 +139,10 @@ async def get_user(token: models.onlyToken):
             "user_id"
         ]
         result = db.get_user_by_ID(usrID)
-        if result != []:
-            return result[0]
+        if result != {}:
+            return result
         else:
-            return {"msg": "ID especificado no existe"}
+            raise HTTPException(status_code=501, detail="Token invalido")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -168,7 +171,7 @@ async def update_pass(user: models.changePass):
         if res:
             return {"msg": "Success"}
         else:
-            return {"msg": "Wrong password"}
+            raise HTTPException(status_code=501, detail="Wrong password")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -181,7 +184,7 @@ async def get_tickets_by_autor(token: models.onlyToken):
         if len(result) == 0:
             return result
         else:
-            raise HTTPException(status_code=500, detail="No se pudo ingresar")
+            raise HTTPException(status_code=501, detail="No tickets")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -191,9 +194,9 @@ async def login(user: models.log_User) -> dict[str, str]:
     try:
         result = db.get_password_by_email(user.email)
         if result != user.password:
-            return {"access_token": "0"}
+            return HTTPException(status_code=501, detail=str("Wrong password"))
         user_id = db.get_userID_by_email(user.email)
-        payload = {"user_id": user_id, "expires": time.time() + 600}
+        payload = {"user_id": user_id}
         token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
         return {"access_token": token}
     except Exception as e:
@@ -203,13 +206,12 @@ async def login(user: models.log_User) -> dict[str, str]:
 @app.post("/add_ticket", tags=["Ticket"])
 async def create_ticket(ticket: models.Ticket):
     try:
+        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])["user_id"]
         result = db.add_ticket(
-            ticket.autor, ticket.contenido, ticket.categoria, ticket.prioridad
+            usrID, ticket.contenido, ticket.categoria, ticket.prioridad
         )
         if result:
             return {"msg": "Ticket ingresado"}
-        else:
-            raise HTTPException(status_code=500, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -221,7 +223,7 @@ async def create_evento(evento: models.Evento):
         if result:
             return {"msg": "Evento ingresado"}
         else:
-            raise HTTPException(status_code=500, detail="No se puede :/")
+            raise HTTPException(status_code=501, detail="No se puede :/")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

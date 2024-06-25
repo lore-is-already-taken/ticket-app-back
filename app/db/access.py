@@ -94,16 +94,12 @@ def get_admins():
         res.append(admin)
 
     line = f"SELECT name FROM Users WHERE userID IN ({user});"
-    line = line.replace('[','').replace(']','')
+    line = line.replace("[", "").replace("]", "")
     cursor.execute(line)
     resFinal = []
     i = 0
     for row in cursor.fetchall():
-        admin = {
-            "nombre": row.name,
-            "userID": user[i],
-            "rolID": res[i][0]
-        }
+        admin = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
         resFinal.append(admin)
     return resFinal
 
@@ -117,11 +113,17 @@ def get_user_by_ID(id: int) -> List[str]:
     cursor = database_connect().cursor()
     line = f"SELECT name,email FROM Users WHERE userID='{id}';"
     cursor.execute(line)
-    res = []
+    name = ""
+    mail = ""
     for row in cursor.fetchall():
-        row = {"name": row.name, "email": row.email}
-        res.append(row)
-    return res
+        name = row.name
+        mail = row.email
+    line = f"SELECT rol FROM Rol WHERE userID='{id}';"
+    cursor.execute(line)
+    user = {}
+    for row in cursor.fetchall():
+        user = {"nombre": name, "email": mail, "rol": row.rol}
+    return user
 
 
 def get_password_by_email(email: str) -> str:
@@ -151,11 +153,12 @@ def get_tickets_by_autor(userID: int) -> List:
 
     if rolID == "":
         return []
-    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
+    line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE autor='{rolID}';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "resposable": row.resposable,
             "contenido": row.contenido,
@@ -179,6 +182,7 @@ def get_all_tickets() -> List:
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "responsable": row.responsable,
             "contenido": row.contenido,
@@ -213,11 +217,12 @@ def get_tickets_by_responsable(userID: int) -> List:
     for row in cursor.fetchall():
         rolID = row.rolID
 
-    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
+    line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "responsable": row.responsable,
             "contenido": row.contenido,
@@ -243,11 +248,12 @@ def general_get_tickets(userID: int) -> List:
     if rolID == "":
         return []
 
-    line = f"SELECT autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}' OR responsable='';"
+    line = f"SELECT ticketID,autor,responsable,contenido,categoria,review,prioridad,textoReview FROM Ticket WHERE responsable='{rolID}' OR responsable='';"
     cursor.execute(line)
     res = []
     for row in cursor.fetchall():
         tick = {
+            "ticketID": row.ticketID,
             "autor": row.autor,
             "responsable": row.responsable,
             "contenido": row.contenido,
@@ -349,21 +355,14 @@ def update_pass(usr: int, oldPassword: str, newPassword: str) -> bool:
     return True
 
 
-def asign_responsable(ticket: int, user: int) -> bool:
+def assign_responsable(ticket: int, user: int) -> bool:
     """
     Usando el userID encuentra el rolID correspondiente y lo usa para asignar el valor responsable a
     un ticket usando el ticketID.
     Devuelve True si la asignacion fue exitosa, y False si no se encontro ningun rol asociado a ese user.
     """
     cursor = database_connect().cursor()
-    line = f"SELECT rolID FROM Rol WHERE userID='{user}';"
-    cursor.execute(line)
-    rolID = ""
-    for row in cursor.fetchall():
-        rolID = row.userID
-    if rolID == "":
-        return False
-    line = f"UPDATE Rol SET responsable='{rolID}' WHERE ticketID='{ticket}';"
+    line = f"UPDATE Rol SET responsable='{user}' WHERE ticketID='{ticket}';"
     cursor.execute(line)
     cursor.commit()
     return True
@@ -371,7 +370,16 @@ def asign_responsable(ticket: int, user: int) -> bool:
 
 def delete_user(usr: int) -> bool:
     cursor = database_connect().cursor()
-    line = f"DELETE FROM Users WHERE userID='{usr}';"
+    line = f"SELECT rolID FROM Rol WHERE userID='{usr}';"
+    cursor.execute(line)
+    rolID = ""
+    for row in cursor.fetchall():
+        rolID = row.rolID
+
+    line = f"DELETE FROM Rol WHERE rolID={rolID};"
+    cursor.execute(line)
+    cursor.commit()
+    line = f"DELETE FROM Users WHERE userID={usr};"
     cursor.execute(line)
     cursor.commit()
     return True

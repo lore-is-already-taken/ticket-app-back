@@ -182,6 +182,30 @@ def get_admins():
     return resFinal
 
 
+def get_normales():
+    cursor = database_connect().cursor()
+    line = "SELECT rolID,userID FROM Rol WHERE rol='normal';"
+    cursor.execute(line)
+    res = []
+    user = []
+    for row in cursor.fetchall():
+        user = []
+        user.append(row.rolID)
+        user.append(row.userID)
+        user.append(row.userID)
+        res.append(user)
+
+    line = f"SELECT name FROM Users WHERE userID IN ({user});"
+    line = line.replace("[", "").replace("]", "")
+    cursor.execute(line)
+    resFinal = []
+    i = 0
+    for row in cursor.fetchall():
+        user = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
+        resFinal.append(user)
+    return resFinal
+
+
 def get_user_by_ID(id: int) -> List[str]:
     """
     Devuelve un arreglo con 2 elementos [nombre,email].

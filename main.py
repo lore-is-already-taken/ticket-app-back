@@ -83,7 +83,7 @@ async def get_admins():
 @app.get("/get_normal_user", tags=["User"])
 async def get_normal_user():
     try:
-        res = db.get_admins()
+        res = db.get_normales()
         return res
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -179,6 +179,7 @@ def get_admins():
     for row in cursor.fetchall():
         admin = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
         resFinal.append(admin)
+        i=i+1
     return resFinal
 
 
@@ -206,6 +207,7 @@ def get_normales():
     for row in cursor.fetchall():
         admin = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
         resFinal.append(admin)
+        i=i+1
     return resFinal
 
 

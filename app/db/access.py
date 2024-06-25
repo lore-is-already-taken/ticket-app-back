@@ -189,11 +189,38 @@ def get_normales():
     res = []
     user = []
     for row in cursor.fetchall():
-        user = []
-        user.append(row.rolID)
+        admin = []
+        admin.append(row.rolID)
+        admin.append(row.userID)
         user.append(row.userID)
+        res.append(admin)
+    if res == []:
+        return []
+
+    line = f"SELECT name FROM Users WHERE userID IN ({user});"
+    line = line.replace("[", "").replace("]", "")
+    print(line)
+    cursor.execute(line)
+    resFinal = []
+    i = 0
+    for row in cursor.fetchall():
+        admin = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
+        resFinal.append(admin)
+    return resFinal
+
+
+def get_():
+    cursor = database_connect().cursor()
+    line = "SELECT rolID,userID FROM Rol WHERE rol='admin';"
+    cursor.execute(line)
+    res = []
+    user = []
+    for row in cursor.fetchall():
+        admin = []
+        admin.append(row.rolID)
+        admin.append(row.userID)
         user.append(row.userID)
-        res.append(user)
+        res.append(admin)
 
     line = f"SELECT name FROM Users WHERE userID IN ({user});"
     line = line.replace("[", "").replace("]", "")
@@ -201,8 +228,8 @@ def get_normales():
     resFinal = []
     i = 0
     for row in cursor.fetchall():
-        user = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
-        resFinal.append(user)
+        admin = {"nombre": row.name, "userID": user[i], "rolID": res[i][0]}
+        resFinal.append(admin)
     return resFinal
 
 

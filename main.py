@@ -84,7 +84,9 @@ async def get_admins():
 async def get_normal_user():
     try:
         res = db.get_normales()
-        return res
+        if res != []:
+            return res
+        raise HTTPException(status_code=501, detail="No hay usuarios normales")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

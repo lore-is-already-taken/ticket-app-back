@@ -125,8 +125,8 @@ async def get_events(token: models.onlyToken):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/close_event", tags=["Evento"])
-async def close_event(ticket: models.onlyID):
+@app.post("/close_ticket", tags=["Ticket"])
+async def close_ticket(ticket: models.onlyID):
     try:
         if db.close_ticket(ticket.id):
             return {"msg": "Success"}
@@ -264,6 +264,22 @@ async def create_ticket(ticket: models.Ticket):
         ]
         result = db.add_ticket(
             usrID, ticket.contenido, ticket.categoria, ticket.prioridad
+        )
+        if result:
+            return {"msg": "Ticket ingresado"}
+        raise HTTPException(status_code=501, detail="No se pudo ingresar")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/add_ticket", tags=["Ticket"])
+async def create_ticket_responsable(ticket: models.Ticket_responsable):
+    try:
+        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
+            "user_id"
+        ]
+        result = db.add_ticket_with_responsable(
+            usrID, ticket.id_responsable, ticket.contenido, ticket.categoria, ticket.prioridad
         )
         if result:
             return {"msg": "Ticket ingresado"}

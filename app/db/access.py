@@ -71,6 +71,32 @@ def add_ticket(autor: int, contenido: str, categoria: str, prioridad: int) -> bo
     return True
 
 
+def add_ticket_with_responsable(autor: int, responsable:int, contenido: str, categoria: str, prioridad: int) -> bool:
+    cursor = database_connect().cursor()
+    line = f"SELECT rolID FROM Rol WHERE userID='{autor}';"
+    cursor.execute(line)
+    autorID = ""
+    for row in cursor.fetchall():
+        autorID = row.rolID
+    if autorID == "":
+        return False
+    line = f"SELECT rolID FROM Rol WHERE userID='{responsable}';"
+    cursor.execute(line)
+    responsableID = ""
+    for row in cursor.fetchall():
+        responsableID = row.rolID
+    if responsableID == "":
+        return False
+
+    line = f"INSERT INTO Ticket (autor,responsable,contenido,categoria,prioridad) OUTPUT INSERTED.ticketID VALUES ('{autorID}','{responsableID}','{contenido}','{categoria}','{prioridad}');"
+    cursor.execute(line)
+    ticketID = cursor.fetchone()[0]
+    if not update_event(ticketID, 1, cursor):
+        return False
+    cursor.commit()
+    return True
+
+
 def add_rol(userID: int, rol: str) -> bool:
     cursor = database_connect().cursor()
     line = f"INSERT INTO Rol (userID,rol) VALUES ('{userID}','{rol}');"

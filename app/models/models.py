@@ -20,6 +20,14 @@ class Ticket(BaseModel):
     prioridad: int
 
 
+class Ticket_responsable(BaseModel):
+    access_token: str
+    id_responsable: int
+    contenido: str
+    categoria: str
+    prioridad: int
+
+
 class Evento(BaseModel):
     ticketID: int
     contenido: str

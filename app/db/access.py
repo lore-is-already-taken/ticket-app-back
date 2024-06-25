@@ -105,13 +105,6 @@ def add_ticket_with_responsable(autor: int, responsable:int, contenido: str, cat
         autorID = row.rolID
     if autorID == "":
         return False
-    line = f"SELECT rolID FROM Rol WHERE userID='{responsable}';"
-    cursor.execute(line)
-    responsableID = ""
-    for row in cursor.fetchall():
-        responsableID = row.rolID
-    if responsableID == "":
-        return False
 
     line = f"INSERT INTO Ticket (autor,responsable,contenido,categoria,prioridad) OUTPUT INSERTED.ticketID VALUES ('{autorID}','{responsable}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)

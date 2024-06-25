@@ -282,7 +282,7 @@ async def create_ticket(ticket: models.Ticket):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/add_ticket", tags=["Ticket"])
+@app.post("/add_ticket_with_responsable", tags=["Ticket"])
 async def create_ticket_responsable(ticket: models.Ticket_responsable):
     try:
         usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[

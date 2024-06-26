@@ -81,9 +81,9 @@ async def get_admins():
 
 
 @app.get("/notifica", tags=["Evento"])
-async def notifica(evento: models.onlyID):
+async def notifica(eventos: models.listaID):
     try:
-        res = db.notificado(evento.id)
+        res = db.notificado(eventos.ids)
         if res:
             return res
         raise HTTPException(status_code=501, detail="No se pudo marcar como notificado")

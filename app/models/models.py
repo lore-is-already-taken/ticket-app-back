@@ -35,6 +35,10 @@ class onlyToken(BaseModel):
     access_token: str
 
 
+class listaID(BaseModel):
+    ids: list
+
+
 class onlyID(BaseModel):
     id: int
 

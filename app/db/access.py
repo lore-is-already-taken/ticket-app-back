@@ -575,7 +575,8 @@ def close_ticket(ticket: int) -> bool:
 
 def notificado(evento: int) -> bool:
     cursor = database_connect().cursor()
-    line = f"UPDATE Evento SET notificado='true' WHERE eventoID='{evento}';"
+    line = f"UPDATE Evento SET notificado='true' WHERE eventoID IN ('{evento}');"
+    line = line.replace('[','').replace(']','')
     cursor.execute(line)
     cursor.commit()
     return True

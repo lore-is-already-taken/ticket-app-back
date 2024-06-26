@@ -18,6 +18,7 @@ class Ticket(BaseModel):
     contenido: str
     categoria: str
     prioridad: int
+    responsable: int
 
 
 class Ticket_responsable(BaseModel):

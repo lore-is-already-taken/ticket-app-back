@@ -80,7 +80,7 @@ async def get_admins():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/notifica", tags=["Evento"])
+@app.post("/notifica", tags=["Evento"])
 async def notifica(eventos: models.listaID):
     try:
         res = db.notificado(eventos.ids)

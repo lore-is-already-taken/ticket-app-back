@@ -1,4 +1,5 @@
 import time
+from typing import Dict, List
 
 import jwt
 import uvicorn
@@ -81,9 +82,11 @@ async def get_admins():
 
 
 @app.post("/notifica", tags=["Evento"])
-async def notifica(eventos: models.listaID):
+async def notifica(eventos: List[Dict[str, int]]):
     try:
-        res = db.notificado(eventos.ids)
+        eventoid = [int(id["eventoID"]) for id in eventos]
+        print(eventoid)
+        res = db.notificado(eventoid)
         if res:
             return res
         raise HTTPException(status_code=501, detail="No se pudo marcar como notificado")

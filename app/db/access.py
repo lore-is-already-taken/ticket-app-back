@@ -108,6 +108,7 @@ def add_ticket_with_responsable(autor: int, responsable:int, contenido: str, cat
 
     line = f"INSERT INTO Ticket (autor,responsable,contenido,categoria,prioridad) OUTPUT INSERTED.ticketID VALUES ('{autorID}','{responsable}','{contenido}','{categoria}','{prioridad}');"
     cursor.execute(line)
+    print("ticket insertado")
     ticketID = cursor.fetchone()[0]
     if not update_event(ticketID, 1, cursor):
         return False
@@ -193,7 +194,6 @@ def get_normales():
 
     line = f"SELECT name FROM Users WHERE userID IN ({user});"
     line = line.replace("[", "").replace("]", "")
-    print(line)
     cursor.execute(line)
     resFinal = []
     i = 0
@@ -566,6 +566,14 @@ def close_ticket(ticket: int) -> bool:
     cursor = database_connect().cursor()
     if not update_event(ticket, 3, cursor):
         return False
+    cursor.commit()
+    return True
+
+
+def notificado(evento: int) -> bool:
+    cursor = database_connect().cursor()
+    line = f"UPDATE Evento SET notificado=1 WHERE eventoID='{evento}';"
+    cursor.execute(line)
     cursor.commit()
     return True
 

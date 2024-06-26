@@ -80,6 +80,17 @@ async def get_admins():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/notifica", tags=["Evento"])
+async def notifica(evento: models.onlyID):
+    try:
+        res = db.notificado(evento.id)
+        if res:
+            return res
+        raise HTTPException(status_code=501, detail="No se pudo marcar como notificado")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/get_normal_user", tags=["User"])
 async def get_normal_user():
     try:

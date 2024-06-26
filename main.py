@@ -272,32 +272,24 @@ async def create_ticket(ticket: models.Ticket):
         usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
             "user_id"
         ]
-        result = db.add_ticket(
-            usrID, ticket.contenido, ticket.categoria, ticket.prioridad
-        )
-        if result:
-            return {"msg": "Ticket ingresado"}
-        raise HTTPException(status_code=501, detail="No se pudo ingresar")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/add_ticket_with_responsable", tags=["Ticket"])
-async def create_ticket_responsable(ticket: models.Ticket_responsable):
-    try:
-        usrID = jwt.decode(ticket.access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])[
-            "user_id"
-        ]
-        result = db.add_ticket_with_responsable(
-            usrID,
-            ticket.id_responsable,
-            ticket.contenido,
-            ticket.categoria,
-            ticket.prioridad,
-        )
-        if result:
-            return {"msg": "Ticket ingresado"}
-        raise HTTPException(status_code=501, detail="No se pudo ingresar")
+        if ticket.responsable == 0:
+            result = db.add_ticket(
+                usrID, ticket.contenido, ticket.categoria, ticket.prioridad
+            )
+            if result:
+                return {"msg": "Ticket ingresado"}
+            raise HTTPException(status_code=501, detail="No se pudo ingresar")
+        else:
+            result = db.add_ticket_with_responsable(
+                usrID,
+                ticket.responsable,
+                ticket.contenido,
+                ticket.categoria,
+                ticket.prioridad,
+            )
+            if result:
+                return {"msg": "Ticket ingresado"}
+            raise HTTPException(status_code=501, detail="No se pudo ingresar")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

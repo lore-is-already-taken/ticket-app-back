@@ -408,6 +408,7 @@ def get_tickets_by_responsable(userID: int) -> List:
             "prioridad": row.prioridad,
             "review": row.review,
             "textoReview": row.textoReview,
+            "status": get_event(row.ticketID)
         }
         res.append(tick)
     return res

@@ -501,12 +501,15 @@ def get_events_by_userID(userID: int) -> List:
     for row in cursor.fetchall():
         tickets.append(row.ticketID)
 
-    line = f"SELECT contenido FROM Evento WHERE ticketID IN ({tickets});"
+    line = f"SELECT contenido,eventoID,ticketID FROM Evento WHERE ticketID IN ({tickets}) AND notificado='false';"
     line = line.replace("[", "").replace("]", "")
     cursor.execute(line)
     eventos = []
     for row in cursor.fetchall():
-        evento = {"contenido": row.contenido, "ticketID": row.ticketID}
+        evento = {"contenido": row.contenido,
+                  "ticketID": row.ticketID,
+                  "eventoID": row.eventoID
+                  }
         eventos.append(evento)
     return eventos
 
@@ -572,7 +575,7 @@ def close_ticket(ticket: int) -> bool:
 
 def notificado(evento: int) -> bool:
     cursor = database_connect().cursor()
-    line = f"UPDATE Evento SET notificado=1 WHERE eventoID='{evento}';"
+    line = f"UPDATE Evento SET notificado='true' WHERE eventoID='{evento}';"
     cursor.execute(line)
     cursor.commit()
     return True

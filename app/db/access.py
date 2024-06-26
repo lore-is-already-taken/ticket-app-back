@@ -501,8 +501,14 @@ def get_events_by_userID(userID: int) -> List:
     for row in cursor.fetchall():
         tickets.append(row.ticketID)
 
+    line = f"SELECT ticketID FROM Ticket WHERE responsable='{rolID}';"
+    cursor.execute(line)
+    for row in cursor.fetchall():
+        tickets.append(row.ticketID)
+
     line = f"SELECT contenido,eventoID,ticketID FROM Evento WHERE ticketID IN ({tickets}) AND notificado='false';"
     line = line.replace("[", "").replace("]", "")
+    print(line)
     cursor.execute(line)
     eventos = []
     for row in cursor.fetchall():
